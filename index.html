@@ -1,0 +1,4852 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>でじ帖 - Offline Diary</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f1ea;
+            --card-bg: #fffef9;
+            --text-color: #4b3621;
+            --primary-color: #8b5a2b;
+            --accent-color: #d2b48c;
+            --border-radius: 16px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        }
+       #diary-content {
+    line-height: 1.5;          
+    white-space: pre-wrap;
+    outline: none;
+}
+
+
+#diary-content p,
+#diary-content div,
+#diary-content br + br {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#diary-content * {
+    line-height: 1.5;
+}
+        [data-theme="night"] {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e94560;
+            --primary-color: #e94560;
+            --accent-color:#fff79a;
+        }
+        [data-theme="night"] #diary-title {
+    color: #e94560; 
+}
+        [data-theme="night"] .tab-item.active {
+    color: #e94560 !important;
+}
+        [data-theme="yumekawa"] {
+            --bg-color: #fdf6f9;
+            --card-bg: #ffffff;
+            --text-color: #5d4a4a;
+            --primary-color: #ffb7c5;
+            --accent-color: #a2d2ff;
+        }
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #fcfcfc;
+            --primary-color: #bb86fc;
+            --accent-color: #03dac6;
+        }
+
+
+[data-theme="night"] #diary-content {
+    background: rgba(22, 33, 62, 0.92) !important;
+    color: #f3d6dc !important;
+
+    border: 1px solid rgba(233, 69, 96, 0.35) !important;
+
+    box-shadow:
+        inset 0 0 12px rgba(0,0,0,0.35),
+        0 0 10px rgba(233,69,96,0.08);
+}
+[data-theme="night"] .notification-bar {
+    background: #fff79a;
+    color: #2b2f4a;
+}
+[data-theme="night"] .toolbar {
+    background: rgba(15, 52, 96, 0.75) !important;
+
+    border: 1px solid rgba(233,69,96,0.18);
+
+    backdrop-filter: blur(6px);
+}
+
+[data-theme="night"] .tool-btn {
+    background: rgba(22, 33, 62, 0.95);
+
+    color: #f3d6dc;
+
+    border: 1px solid rgba(233,69,96,0.25);
+
+    transition: all 0.18s ease;
+}
+
+[data-theme="night"] .tool-btn:hover {
+    background: rgba(233,69,96,0.15);
+
+    transform: translateY(-1px);
+}
+
+[data-theme="night"] input,
+[data-theme="night"] textarea,
+[data-theme="night"] select {
+    background: rgba(22, 33, 62, 0.88) !important;
+
+    color: #f3d6dc !important;
+
+    border: 1px solid rgba(233,69,96,0.25);
+}
+
+[data-theme="night"] input::placeholder,
+[data-theme="night"] textarea::placeholder {
+    color: rgba(243,214,220,0.45);
+}
+
+[data-theme="dark"] #diary-content {
+    background-color: #1c1c1c !important;
+    color: #e8e8e8 !important;
+    border: 1px solid #555 !important;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+    font-size: 1.05rem;
+}
+
+[data-theme="dark"] #diary-content:empty::before {
+    color: #777 !important;
+    content: attr(placeholder);
+}
+
+[data-theme="dark"] #diary-content:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.2);
+}
+
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    background: #1c1c1c !important;
+    color: #e8e8e8 !important;
+
+    border: 1px solid #555 !important;
+
+    box-shadow:
+        inset 0 2px 6px rgba(0,0,0,0.25);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+    color: #777 !important;
+}
+[data-theme="dark"] .toolbar {
+    background: #252525 !important;
+
+    border: 1px solid #444;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+[data-theme="dark"] .tool-btn {
+    background: #2b2b2b;
+
+    color: #e8e8e8;
+
+    border: 1px solid #555;
+
+    transition: all 0.18s ease;
+}
+
+[data-theme="dark"] .tool-btn:hover {
+    background: #3a3a3a;
+
+    border-color: var(--accent-color);
+
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] #search-input {
+    background: #1c1c1c !important;
+
+    color: #e8e8e8 !important;
+
+    border: 1px solid #555 !important;
+}
+
+[data-theme="dark"] .date-picker-trigger {
+    background: #252525;
+
+    border: 1px solid #555;
+
+    color: #e8e8e8;
+}
+
+[data-theme="dark"] .kawaii-select {
+    background-color: #252525;
+
+    color: #e8e8e8;
+
+    border: 1px solid #555;
+} 
+
+[data-theme="legend"] {
+    --bg-color: rgba(18, 18, 18, 0.98);
+    --card-bg: #121212; 
+    --text-color: #f9e79f;
+    --primary-color: #d4af37; 
+    --accent-color: #f39c12; 
+    --shadow: 0 10px 40px rgba(0, 0, 0, 0.8); 
+    --border-radius: 12px; 
+    
+    font-family: 'Sawarabi Mincho', "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif;
+}
+
+[data-theme="legend"] .card {
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 10px rgba(212, 175, 55, 0.1);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%); 
+}
+
+
+[data-theme="legend"] .container,
+[data-theme="legend"] .lock-container {
+    border: 1px solid #d4af37;
+    background: rgba(18, 18, 18, 0.98);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="legend"] input[type="password"],
+[data-theme="legend"] input[type="text"],
+[data-theme="legend"] input[type="date"],
+[data-theme="legend"] #diary-content {
+    border: 1px solid #d4af37;
+    background-color: #1a1a1a;
+    color: #f9e79f;
+}
+[data-theme="legend"] .cell-0 { background: #333344; }
+
+[data-theme="legend"] nav#tab-bar {
+    background: #1a1a1a;
+    border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+[data-theme="legend"] .tab-item { color: #888899; }
+[data-theme="legend"] .tab-item.active { color: #f9e79f; }
+
+[data-theme="legend"] .fab {
+    background: linear-gradient(135deg, #d4af37 0%, #f39c12 100%);
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+}
+[data-theme="legend"] .fab-menu-item {
+    border: 1px solid #d4af37;
+    background: #1c1c1c;
+    color: #f9e79f;
+}
+
+[data-theme="edamame"] {
+    --bg-color: linear-gradient(135deg, #f7fff3 0%, #ecffd9 100%);
+    --card-bg: rgba(255,255,255,0.88);
+    --text-color: #4f6f3c;
+    --primary-color: #8bcf5b;
+    --accent-color: #b7ec77;
+    --shadow: 0 6px 20px rgba(139,207,91,0.18);
+
+    background-size: 200% 200%;
+}
+
+body[data-theme="edamame"] {
+    background: var(--bg-color);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+[data-theme="edamame"] .card,
+[data-theme="edamame"] header,
+[data-theme="edamame"] nav#tab-bar {
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    border-radius: 28px;
+    border: 2px solid rgba(139,207,91,0.15);
+    box-shadow: var(--shadow);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+[data-theme="edamame"] .card:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 10px 25px rgba(139,207,91,0.25);
+}
+
+[data-theme="edamame"] .btn,
+[data-theme="edamame"] .fab,
+[data-theme="edamame"] .chart-btn,
+[data-theme="edamame"] .tool-btn {
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+[data-theme="edamame"] .btn:hover,
+[data-theme="edamame"] .fab:hover,
+[data-theme="edamame"] .chart-btn:hover {
+    transform: scale(1.08) rotate(-2deg);
+}
+
+[data-theme="edamame"] .mood-btn {
+    transition: transform 0.18s ease;
+}
+
+[data-theme="edamame"] .mood-btn:hover {
+    transform: scale(1.25) rotate(8deg);
+}
+
+[data-theme="edamame"] .mood-btn.active {
+    animation: edamameBounce 0.6s ease;
+    background: rgba(183,236,119,0.35);
+}
+
+[data-theme="edamame"] .tab-item.active {
+    color: #7cb342 !important;
+    animation: beanPop 0.5s ease;
+}
+
+[data-theme="edamame"] input,
+[data-theme="edamame"] #diary-content {
+    border-radius: 18px;
+    border: 2px solid rgba(139,207,91,0.25);
+    background: rgba(255,255,255,0.75);
+}
+
+@keyframes edamameBounce {
+    0%   { transform: scale(0.8) rotate(-10deg); }
+    40%  { transform: scale(1.25) rotate(8deg); }
+    60%  { transform: scale(0.95) rotate(-4deg); }
+    100% { transform: scale(1.1); }
+}
+
+@keyframes beanPop {
+    0% { transform: scale(0.7); opacity: 0.5; }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+[data-theme="scholar"]{
+    --bg:#f6f7f8;
+    --text:#111;
+    --line:rgba(0,0,0,.08);
+
+    background:
+        radial-gradient(circle at top, rgba(0,0,0,.03), transparent 60%),
+        linear-gradient(to bottom,#ffffff,#f3f4f6);
+
+    color:var(--text);
+    overflow-x:hidden;
+    position:relative;
+}
+
+.scholar-floating-layer{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:0;
+}
+
+.scholar-char{
+    position:absolute;
+
+    color:rgba(0,0,0,.16);
+
+    font-family:
+        "Times New Roman",
+        "Georgia",
+        serif;
+
+    font-weight:700;
+
+    user-select:none;
+    white-space:nowrap;
+
+    animation:
+        scholarMove linear forwards,
+        scholarSpin linear infinite;
+
+    filter:blur(.2px);
+}
+
+.scholar-char.small{
+    font-size:18px;
+}
+
+.scholar-char.medium{
+    font-size:32px;
+}
+
+.scholar-char.large{
+    font-size:64px;
+}
+
+@keyframes scholarMove{
+    from{
+        transform:
+            translate(var(--sx),var(--sy))
+            rotate(0deg);
+        opacity:0;
+    }
+
+    10%{
+        opacity:1;
+    }
+
+    90%{
+        opacity:1;
+    }
+
+    to{
+        transform:
+            translate(var(--ex),var(--ey))
+            rotate(var(--r));
+        opacity:0;
+    }
+}
+
+@keyframes scholarSpin{
+    from{
+        rotate:0deg;
+    }
+
+    to{
+        rotate:360deg;
+    }
+}
+
+[data-theme="terminal"] {
+    --bg-color: #0b0f0c;
+    --card-bg: rgba(10, 14, 12, 0.88);
+
+    --text-color: #c8ffd1;
+    --primary-color: #6bff9a;
+    --accent-color: #3cff7a;
+
+    --shadow: 0 0 18px rgba(60, 255, 120, 0.08);
+
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+body[data-theme="terminal"] {
+    background: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+    position: relative;
+}
+
+body[data-theme="terminal"]::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.03) 0px,
+            rgba(255,255,255,0.03) 1px,
+            transparent 2px,
+            transparent 4px
+        );
+
+    pointer-events: none;
+    opacity: 0.25;
+}
+
+body[data-theme="terminal"]::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    background-image:
+        radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+
+    background-size: 3px 3px;
+
+    opacity: 0.08;
+    pointer-events: none;
+}
+[data-theme="terminal"] .notification,
+[data-theme="terminal"] .toast {
+    background: #062a16;
+    color: #c8ffd1;
+    border: 1px solid #3cff7a;
+}
+
+[data-theme="terminal"] header,
+[data-theme="terminal"] #tab-bar {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    transition: none !important;
+
+    background: rgba(5, 8, 6, 0.95);
+    border: 1px solid rgba(60, 255, 120, 0.12);
+
+    box-shadow: none;
+
+    color: var(--text-color);
+}
+
+[data-theme="terminal"] .card,
+[data-theme="terminal"] .section,
+[data-theme="terminal"] .panel {
+    position: relative;
+
+    background: var(--card-bg);
+
+    border: 1px solid rgba(60, 255, 120, 0.18);
+    border-radius: 10px;
+
+    box-shadow: var(--shadow);
+
+    padding: 12px;
+}
+
+[data-theme="terminal"] .card::before {
+    content: "user@deji:~";
+    display: block;
+
+    font-size: 12px;
+    opacity: 0.7;
+
+    margin-bottom: 6px;
+}
+
+
+[data-theme="terminal"] h1,
+[data-theme="terminal"] h2,
+[data-theme="terminal"] h3 {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+[data-theme="terminal"] h1::after,
+[data-theme="terminal"] h2::after {
+    content: "■";
+    animation: blink 1s infinite;
+    margin-left: 6px;
+}
+
+
+[data-theme="terminal"] .btn,
+[data-theme="terminal"] .fab,
+[data-theme="terminal"] button {
+    background: transparent;
+    color: var(--text-color);
+
+    border: 1px solid rgba(60, 255, 120, 0.25);
+
+    border-radius: 6px;
+
+    transition: all 0.15s ease;
+}
+
+[data-theme="terminal"] .btn:hover,
+[data-theme="terminal"] .fab:hover,
+[data-theme="terminal"] button:hover {
+    background: rgba(60, 255, 120, 0.08);
+}
+
+
+[data-theme="terminal"] textarea,
+[data-theme="terminal"] input {
+    background: rgba(0,0,0,0.4);
+    color: var(--text-color);
+
+    border: 1px solid rgba(60, 255, 120, 0.2);
+
+    border-radius: 6px;
+
+    font-family: inherit;
+}
+
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+[data-theme="terminal"] #diary-content {
+    background: rgba(0, 0, 0, 0.72) !important;
+    color: #c8ffd1 !important;
+
+    border: 1px solid rgba(60,255,120,0.22);
+
+    caret-color: #6bff9a;
+
+    box-shadow:
+        inset 0 0 12px rgba(0,0,0,0.45),
+        0 0 8px rgba(60,255,120,0.04);
+}
+
+[data-theme="terminal"] #diary-content:empty::before,
+[data-theme="terminal"] textarea::placeholder,
+[data-theme="terminal"] input::placeholder {
+    color: rgba(200,255,209,0.42) !important;
+}
+
+[data-theme="terminal"] input,
+[data-theme="terminal"] textarea,
+[data-theme="terminal"] select {
+    background: rgba(0,0,0,0.55) !important;
+    color: #c8ffd1 !important;
+
+    border: 1px solid rgba(60,255,120,0.22);
+}
+
+[data-theme="terminal"] input:focus,
+[data-theme="terminal"] textarea:focus,
+[data-theme="terminal"] #diary-content:focus {
+    outline: none;
+
+    border-color: #6bff9a;
+
+    box-shadow:
+        0 0 0 2px rgba(60,255,120,0.12);
+}
+
+[data-theme="terminal"] .toolbar {
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(60,255,120,0.14);
+}
+
+[data-theme="terminal"] .tool-btn {
+    background: rgba(0,0,0,0.55);
+    color: #c8ffd1;
+
+    border: 1px solid rgba(60,255,120,0.18);
+}
+
+[data-theme="terminal"] .notification,
+[data-theme="terminal"] .toast,
+[data-theme="terminal"] .notification-bar {
+    background: #062a16 !important;
+    color: #c8ffd1 !important;
+
+    border: 1px solid rgba(60,255,120,0.22);
+}
+
+[data-theme="terminal"] #search-input {
+    background: rgba(0,0,0,0.6) !important;
+    color: #c8ffd1 !important;
+}
+
+[data-theme="terminal"] .date-picker-trigger {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(60,255,120,0.18);
+    color: #c8ffd1;
+}
+
+[data-theme="lucky"] {
+
+    --bg-color:
+        linear-gradient(
+            135deg,
+            #fff6c9 0%,
+            #ffe27a 45%,
+            #ffd700 100%
+        );
+
+    --card-bg:
+        rgba(255,255,245,0.82);
+
+    --text-color:
+        #5a4300;
+
+    --primary-color:
+        #ffb300;
+
+    --accent-color:
+        #ffec6e;
+
+    --shadow:
+        0 0 25px rgba(255,215,0,0.28);
+
+    --border-radius: 24px;
+}
+
+
+body[data-theme="lucky"] {
+
+    background:
+        var(--bg-color);
+
+    background-attachment: fixed;
+
+    overflow-x: hidden;
+
+    position: relative;
+}
+
+body[data-theme="lucky"]::before {
+
+    content: "";
+
+    position: fixed;
+    inset: 0;
+
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.7) 0px, transparent 5%),
+        radial-gradient(circle at 70% 20%, rgba(255,255,255,0.6) 0px, transparent 6%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.7) 0px, transparent 5%),
+        radial-gradient(circle at 35% 80%, rgba(255,255,255,0.6) 0px, transparent 5%);
+
+    animation:
+        luckySparkle 8s linear infinite;
+
+    opacity: 0.6;
+
+    pointer-events: none;
+}
+
+@keyframes luckySparkle {
+
+    0% {
+        transform: translateY(0px);
+    }
+
+    100% {
+        transform: translateY(-20px);
+    }
+}
+
+
+[data-theme="lucky"] header,
+[data-theme="lucky"] #tab-bar {
+
+    transform: none !important;
+
+    background:
+        rgba(255,255,240,0.85);
+
+    backdrop-filter:
+        blur(10px);
+
+    border:
+        1px solid rgba(255,215,0,0.18);
+
+    box-shadow:
+        0 0 18px rgba(255,215,0,0.15);
+}
+
+
+[data-theme="lucky"] .card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.92),
+            rgba(255,248,210,0.88)
+        );
+
+    border:
+        1px solid rgba(255,215,0,0.20);
+
+    border-radius:
+        var(--border-radius);
+
+    box-shadow:
+        var(--shadow);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+[data-theme="lucky"] .card:hover {
+
+    transform:
+        translateY(-2px)
+        scale(1.01);
+
+    box-shadow:
+        0 0 32px rgba(255,215,0,0.32);
+}
+
+[data-theme="lucky"] .card::before {
+
+    content: "✨";
+
+    position: absolute;
+
+    top: 10px;
+    right: 12px;
+
+    font-size: 1rem;
+
+    opacity: 0.28;
+
+    transform: rotate(10deg);
+}
+ 
+[data-theme="lucky"] h1,
+[data-theme="lucky"] h2,
+[data-theme="lucky"] h3 {
+
+    color:
+        #9c6a00;
+
+    text-shadow:
+        0 0 8px rgba(255,215,0,0.25);
+}
+
+[data-theme="lucky"] .btn,
+[data-theme="lucky"] .fab,
+[data-theme="lucky"] button {
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffd700,
+            #ffb300
+        );
+
+    color:
+        #5a4300;
+
+    border:
+        none;
+
+    border-radius:
+        18px;
+
+    box-shadow:
+        0 0 15px rgba(255,200,0,0.28);
+
+    transition:
+        all 0.18s ease;
+}
+
+[data-theme="lucky"] .btn:hover,
+[data-theme="lucky"] .fab:hover,
+[data-theme="lucky"] button:hover {
+
+    transform:
+        scale(1.05)
+        rotate(-1deg);
+
+    filter:
+        brightness(1.05);
+}
+
+
+[data-theme="lucky"] .mood-btn {
+
+    transition:
+        all 0.18s ease;
+}
+
+[data-theme="lucky"] .mood-btn:hover {
+
+    transform:
+        scale(1.25)
+        rotate(8deg);
+}
+
+[data-theme="lucky"] .mood-btn.active {
+
+    background:
+        rgba(255,215,0,0.18);
+
+    transform:
+        scale(1.42);
+
+    box-shadow:
+        0 0 14px rgba(255,215,0,0.35);
+}
+
+
+[data-theme="lucky"] .mood-filter-item {
+
+    opacity: 0.45;
+
+    transition:
+        all 0.18s ease;
+}
+
+[data-theme="lucky"] .mood-filter-item.active {
+
+    opacity: 1;
+
+    background:
+        rgba(255,215,0,0.18);
+
+    box-shadow:
+        0 0 12px rgba(255,215,0,0.28);
+
+    transform:
+        scale(1.12);
+}
+
+[data-theme="lucky"] input,
+[data-theme="lucky"] textarea,
+[data-theme="lucky"] #diary-content {
+
+    background:
+        rgba(255,255,255,0.75);
+
+    color:
+        #5a4300;
+
+    border:
+        1px solid rgba(255,215,0,0.25);
+
+    border-radius:
+        16px;
+}
+
+
+[data-theme="lucky"] .tab-item {
+
+    color:
+        #9c8455;
+}
+
+[data-theme="lucky"] .tab-item.active {
+
+    color:
+        #ffb300 !important;
+
+    text-shadow:
+        0 0 10px rgba(255,200,0,0.35);
+}
+
+[data-theme="lucky"] .cell-0 {
+    background: #fff9e0;
+}
+
+[data-theme="lucky"] .cell-1 {
+    background: #ffe27a;
+}
+
+[data-theme="lucky"] .cell-2 {
+    background: #ffd54f;
+}
+
+[data-theme="lucky"] .cell-3 {
+    background: #ffca28;
+}
+
+[data-theme="lucky"] .cell-4 {
+    background: #ffb300;
+}
+
+[data-theme="lucky"] .cell-5 {
+    background: #ff8f00;
+}
+
+[data-theme="lucky"] .fab {
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffd700,
+            #ff9800
+        );
+
+    box-shadow:
+        0 0 22px rgba(255,180,0,0.35);
+}
+
+[data-theme="lucky"] .notification-bar {
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff7d6,
+            #ffe9a8
+        );
+
+    color:
+        #6b5200;
+
+    border:
+        1px solid rgba(255,215,0,0.25);
+
+    box-shadow:
+        0 4px 12px rgba(255,215,0,0.18);
+}
+
+[data-theme="lucky"] #app-header::after {
+
+    content: " 🍀";
+
+    opacity: 0.85;
+}
+
+[data-theme="master"] {
+    --bg-color:
+        linear-gradient(
+            135deg,
+            #f5ead9 0%,
+            #ead7bf 100%
+        );
+
+    --card-bg:
+        rgba(255,250,243,0.82);
+
+    --text-color:
+        #4f4032;
+
+    --primary-color:
+        #b07a4f;
+
+    --accent-color:
+        #e6b85c;
+
+    --memo-color:
+        #ffe79a;
+
+    --sticky-pink:
+        #ffc9d6;
+
+    --sticky-blue:
+        #cde7ff;
+
+    --shadow:
+        0 8px 20px rgba(80,60,40,0.08);
+}
+
+
+body[data-theme="master"] {
+    background: var(--bg-color);
+    color: var(--text-color);
+
+    overflow-x: hidden;
+
+    position: relative;
+}
+
+body[data-theme="master"]::before {
+    content: "";
+
+    position: fixed;
+    inset: 0;
+
+    opacity: 0.06;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(120,90,60,0.08) 0px,
+            rgba(120,90,60,0.08) 2px,
+            transparent 2px,
+            transparent 80px
+        );
+
+    pointer-events: none;
+}
+
+body[data-theme="master"] .page::before,
+body[data-theme="master"] main::before {
+    content: "";
+
+    position: fixed;
+
+    top: 0;
+    bottom: 0;
+    left: 72px;
+
+    width: 2px;
+
+    background:
+        rgba(255,120,120,0.18);
+
+    pointer-events: none;
+}
+body[data-theme="master"]::after {
+    content: "";
+
+    position: fixed;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(120,150,190,0.10) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(120,150,190,0.10) 1px,
+            transparent 1px
+        );
+
+    background-size: 32px 32px;
+
+    opacity: 0.45;
+
+    pointer-events: none;
+}
+[data-theme="master"] .card,
+[data-theme="master"] .section,
+[data-theme="master"] .panel {
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 30px,
+            rgba(120,150,190,0.06) 31px
+        );
+}
+
+[data-theme="master"] header,
+[data-theme="master"] #tab-bar {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    transition: none !important;
+
+    background:
+        rgba(255,248,240,0.82);
+
+    backdrop-filter: blur(8px);
+
+    border:
+        1px solid rgba(0,0,0,0.04);
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,0.05);
+}
+
+[data-theme="master"] .card,
+[data-theme="master"] .section,
+[data-theme="master"] .panel {
+    position: relative;
+
+    background: var(--card-bg);
+
+    border-radius: 24px;
+
+    border:
+        1px solid rgba(0,0,0,0.04);
+
+    box-shadow: var(--shadow);
+
+    backdrop-filter: blur(5px);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+[data-theme="master"] .card:hover,
+[data-theme="master"] .section:hover,
+[data-theme="master"] .panel:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 24px rgba(80,60,40,0.10);
+}
+
+[data-theme="master"] .card::before,
+[data-theme="master"] .section::before,
+[data-theme="master"] .panel::before {
+    content: "";
+
+    position: absolute;
+
+    top: 18px;
+    left: -10px;
+
+    width: 42px;
+    height: 20px;
+
+    background: var(--sticky-pink);
+
+    border-radius: 6px;
+
+    transform: rotate(-8deg);
+
+    box-shadow:
+        0 3px 8px rgba(0,0,0,0.08);
+}
+
+[data-theme="master"] .card:nth-child(even)::before,
+[data-theme="master"] .section:nth-child(even)::before,
+[data-theme="master"] .panel:nth-child(even)::before {
+    background: var(--sticky-blue);
+
+    transform: rotate(6deg);
+}
+
+[data-theme="master"] h1,
+[data-theme="master"] h2,
+[data-theme="master"] h3 {
+    position: relative;
+
+    display: inline-block;
+
+    z-index: 1;
+}
+
+[data-theme="master"] h1::after,
+[data-theme="master"] h2::after,
+[data-theme="master"] h3::after {
+    content: "";
+
+    position: absolute;
+
+    left: -4px;
+    bottom: 2px;
+
+    width: calc(100% + 8px);
+    height: 12px;
+
+    background:
+        rgba(230,184,92,0.32);
+
+    border-radius: 999px;
+
+    z-index: -1;
+
+    transform:
+        rotate(-1deg);
+}
+
+[data-theme="master"] .btn,
+[data-theme="master"] .fab,
+[data-theme="master"] button {
+    background:
+        linear-gradient(
+            135deg,
+            #f3c977,
+            #d89d4b
+        );
+
+    color: #4f4032;
+
+    border: none;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 4px 12px rgba(216,157,75,0.16);
+
+    transition:
+        transform 0.16s ease;
+}
+
+[data-theme="master"] .btn:hover,
+[data-theme="master"] .fab:hover,
+[data-theme="master"] button:hover {
+    transform:
+        rotate(-1deg)
+        scale(1.03);
+}
+
+[data-theme="master"] textarea,
+[data-theme="master"] input {
+    background:
+        rgba(255,255,255,0.55);
+
+    border:
+        2px dashed rgba(176,122,79,0.20);
+
+    border-radius: 16px;
+
+    color: var(--text-color);
+}
+
+
+[data-theme="master"] .tab-item.active {
+    position: relative;
+
+    color: #b07a4f !important;
+
+    font-weight: 600;
+}
+
+[data-theme="master"] .tab-item.active::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: -4px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #d89d4b;
+}
+
+[data-theme="devil"] {
+
+    --bg-color:
+        radial-gradient(
+            circle at top,
+            #2b0038 0%,
+            #17001f 45%,
+            #09000d 100%
+        );
+
+    --card-bg:
+        rgba(35, 0, 45, 0.82);
+
+    --text-color:
+        #f6d6ff;
+
+    --primary-color:
+        #b300ff;
+
+    --accent-color:
+        #ff2dfb;
+
+    --shadow:
+        0 0 25px rgba(179,0,255,0.45);
+
+    --border-radius: 22px;
+}
+
+
+body[data-theme="devil"] {
+
+    background:
+        var(--bg-color);
+
+    background-attachment: fixed;
+
+    overflow-x: hidden;
+
+    position: relative;
+}
+
+body[data-theme="devil"]::before {
+
+    content: "";
+
+    position: fixed;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(255,0,255,0.08),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 80% 70%,
+            rgba(170,0,255,0.10),
+            transparent 35%
+        );
+
+    filter: blur(50px);
+
+    animation: devilFog 12s ease-in-out infinite alternate;
+
+    pointer-events: none;
+}
+
+body[data-theme="devil"]::after {
+
+    content: "";
+
+    position: fixed;
+    inset: 0;
+
+    opacity: 0.06;
+
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.06) 0px,
+            rgba(255,255,255,0.06) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    pointer-events: none;
+}
+
+@keyframes devilFog {
+
+    0% {
+        transform: translateY(0px) scale(1);
+    }
+
+    100% {
+        transform: translateY(-20px) scale(1.08);
+    }
+}
+
+[data-theme="devil"] header,
+[data-theme="devil"] #tab-bar {
+
+    transform: none !important;
+
+    background:
+        rgba(20,0,30,0.88);
+
+    backdrop-filter: blur(12px);
+
+    border:
+        1px solid rgba(255,0,255,0.15);
+
+    box-shadow:
+        0 0 18px rgba(179,0,255,0.22);
+}
+
+[data-theme="devil"] .card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(50,0,70,0.90),
+            rgba(20,0,35,0.95)
+        );
+
+    border:
+        1px solid rgba(255,0,255,0.18);
+
+    border-radius:
+        var(--border-radius);
+
+    box-shadow:
+        var(--shadow);
+
+    backdrop-filter:
+        blur(10px);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+[data-theme="devil"] .card:hover {
+
+    transform:
+        translateY(-2px)
+        scale(1.01);
+
+    box-shadow:
+        0 0 35px rgba(255,0,255,0.35);
+}
+
+[data-theme="devil"] .card::before {
+
+    content: "☠️";
+
+    position: absolute;
+
+    top: 10px;
+    right: 12px;
+
+    font-size: 1rem;
+
+    opacity: 0.18;
+
+    transform: rotate(12deg);
+}
+
+[data-theme="devil"] h1,
+[data-theme="devil"] h2,
+[data-theme="devil"] h3 {
+
+    color:
+        #f3b8ff;
+
+    text-shadow:
+        0 0 10px rgba(255,0,255,0.45);
+}
+
+[data-theme="devil"] .btn,
+[data-theme="devil"] .fab,
+[data-theme="devil"] button {
+
+    background:
+        linear-gradient(
+            135deg,
+            #7000ff,
+            #ff00c8
+        );
+
+    color:
+        white;
+
+    border:
+        none;
+
+    border-radius:
+        18px;
+
+    box-shadow:
+        0 0 18px rgba(179,0,255,0.35);
+
+    transition:
+        all 0.2s ease;
+}
+
+[data-theme="devil"] .btn:hover,
+[data-theme="devil"] .fab:hover,
+[data-theme="devil"] button:hover {
+
+    transform:
+        scale(1.06);
+
+    filter:
+        brightness(1.12);
+}
+
+[data-theme="devil"] .mood-btn {
+
+    transition:
+        all 0.18s ease;
+}
+
+[data-theme="devil"] .mood-btn:hover {
+
+    transform:
+        scale(1.28)
+        rotate(-6deg);
+}
+        
+[data-theme="devil"] .mood-btn.active {
+
+    background:
+        rgba(255,0,255,0.22);
+
+    box-shadow:
+        0 0 18px rgba(255,0,255,0.45);
+
+    transform:
+        scale(1.45);
+}
+
+[data-theme="devil"] .mood-filter-item {
+
+    opacity: 0.45;
+
+    transition:
+        all 0.18s ease;
+}
+
+[data-theme="devil"] .mood-filter-item.active {
+
+    opacity: 1;
+
+    background:
+        rgba(179,0,255,0.25);
+
+    box-shadow:
+        0 0 15px rgba(255,0,255,0.35);
+
+    transform:
+        scale(1.15);
+}
+
+[data-theme="devil"] input,
+[data-theme="devil"] textarea,
+[data-theme="devil"] #diary-content {
+
+    background:
+        rgba(10,0,20,0.75);
+
+    color:
+        #ffdfff;
+
+    border:
+        1px solid rgba(255,0,255,0.28);
+
+    border-radius:
+        16px;
+}
+        
+[data-theme="devil"] .tab-item {
+
+    color:
+        #9a7aa8;
+}
+
+[data-theme="devil"] .tab-item.active {
+
+    color:
+        #ff5cff !important;
+
+    text-shadow:
+        0 0 12px rgba(255,0,255,0.6);
+}
+
+
+[data-theme="devil"] .cell-0 {
+    background: #1a1020;
+}
+
+[data-theme="devil"] .cell-1 {
+    background: #45005e;
+}
+
+[data-theme="devil"] .cell-2 {
+    background: #72009f;
+}
+
+[data-theme="devil"] .cell-3 {
+    background: #a000d6;
+}
+
+[data-theme="devil"] .cell-4 {
+    background: #d600ff;
+}
+
+[data-theme="devil"] .cell-5 {
+    background: #ff66ff;
+}
+
+
+[data-theme="devil"] .fab {
+
+    background:
+        linear-gradient(
+            135deg,
+            #8a00ff,
+            #ff00f2
+        );
+
+    box-shadow:
+        0 0 24px rgba(255,0,255,0.45);
+}
+
+
+[data-theme="devil"] #app-header::after {
+
+    content: " 😈";
+
+    opacity: 0.8;
+}
+[data-theme="cosmos"] {
+    --bg-color: linear-gradient(125deg, #000005 0%, #050010 25%, #1a0033 50%, #050010 75%, #000005 100%);
+    
+　　--card-bg: rgba(10, 10, 20, 0.7);    
+    --text-color: #e0f7fa; 
+    
+    --primary-color: #7e57c2; 
+    
+    --accent-color: #26a69a;
+    
+    --shadow: 0 0 20px rgba(126, 87, 194, 0.3);
+    
+    --border-radius: 20px;
+    
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+}
+
+body[data-theme="cosmos"] {
+    background: var(--bg-color) fixed; 
+    background-size: 400% 400%;
+    animation: cosmosGradient 15s ease infinite;
+    min-height: 100vh;
+}
+
+@keyframes cosmosGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+[data-theme="cosmos"] .card,
+[data-theme="cosmos"] header, 
+[data-theme="cosmos"] nav#tab-bar { 
+    background-color: var(--card-bg) !important;
+    border: 1px solid rgba(224, 247, 252, 0.1);
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    background-image: radial-gradient(circle at center, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 20px 20px; 
+    color: var(--text-color);
+}
+
+[data-theme="cosmos"] .lock-container {
+    background-color: rgba(10, 10, 20, 0.9) !important;
+    border: 1px solid rgba(126, 87, 194, 0.4);
+    box-shadow: 0 0 30px rgba(126, 87, 194, 0.5);
+}
+
+[data-theme="cosmos"] input[type="password"],
+[data-theme="cosmos"] input[type="text"],
+[data-theme="cosmos"] input[type="date"],
+[data-theme="cosmos"] #diary-content,
+[data-theme="cosmos"] #search-input {
+    border: 1px solid rgba(126, 87, 194, 0.5);
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    color: #e0f7fa;
+    box-sizing: border-box; 
+}
+
+[data-theme="cosmos"] .heatmap-cell {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+[data-theme="cosmos"] .cell-0 { background: rgba(255, 255, 255, 0.05); }
+
+[data-theme="cosmos"] .fab {
+    background: linear-gradient(135deg, #7e57c2 0%, #26a69a 100%);
+    box-shadow: 0 0 15px rgba(38, 166, 154, 0.5);
+}
+
+[data-theme="cosmos"] header,
+[data-theme="cosmos"] .tab-item,
+[data-theme="cosmos"] #current-date-display,
+[data-theme="cosmos"] #status-greeting,
+[data-theme="cosmos"] .diary-preview,
+[data-theme="cosmos"] #lock-msg {
+    color: var(--text-color) !important;
+}
+
+[data-theme="cosmos"] .tab-item.active {
+    color: var(--accent-color) !important;
+}
+        body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    transition: all 0.3s ease;
+    overflow-x: hidden;
+    display: block; 
+    align-items: center;
+}
+        #lock-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.5s ease;
+        }
+        .lock-container {
+            text-align: center;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            max-width: 90%;
+            width: 320px;
+        }
+        input[type="password"], input[type="text"] {
+            padding: 12px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            margin: 0.5rem 0;
+            outline: none;
+        }
+        header {
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-sizing: border-box;
+}
+        main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1rem 5rem 1rem;
+    overflow-x: hidden;
+    max-width: 600px;
+    margin: 0 auto !important; 
+    width: 100%;    
+    box-sizing: border-box;
+    align-self: center;
+    align-items: center;
+        }
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .view.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        nav#tab-bar {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--card-bg);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.8rem 0;
+            z-index: 1000;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+     
+        .card {
+            background: var(--card-bg);
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+        .notification-bar {
+            background: var(--accent-color);
+            color: white;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            display: none;
+            animation: slideDown 0.4s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(25, 1fr);
+            gap: 3px;
+            margin-top: 10px;
+            justify-content: center;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            background: #eee;
+            cursor: pointer;
+            min-width: 0;
+            transition: transform 0.1s;
+        }
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 1;
+        }
+.cell-0 { background: #f0f0f0; }        
+.cell-1 { background: #a2d2ff; }      
+.cell-2 { background: #ff8a80; }     
+.cell-3 { background: #c8e6c9; }         
+.cell-4 { background: #ffb7c5; }     
+.cell-5 { background: #ffd700; }    
+        
+        .mood-btn {
+    font-size: 1.5rem; 
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.2s; 
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 50%; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;  
+    height: 35px; 
+}
+
+.mood-btn:hover {
+    transform: scale(1.2);   
+}
+
+.mood-btn.active {
+    background-color: #ffb700;
+    color: #333;
+    transform: scale(1.5);   
+    box-shadow: 0 4px 10px rgba(255,215,0,0.4); 
+}
+        .diary-item {
+            border-left: 5px solid var(--primary-color);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+        .diary-date { font-size: 0.8rem; opacity: 0.7; }
+        .diary-title { font-weight: bold; font-size: 1.1rem; margin: 4px 0; }
+        .diary-preview { font-size: 0.9rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .fab-container {
+            position: fixed;
+            right: 20px;
+            bottom: 80px;
+            z-index: 500;
+        }
+        .fab {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        .fab-menu {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .fab-menu.active {
+            pointer-events: auto;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .fab-menu-item {
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 2px solid var(--primary-color);
+        }
+
+      
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toolbar {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            padding: 5px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+        .tool-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        #diary-content {
+            min-height: 300px;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 8px;
+            outline: none;
+            background: white;
+            color: #333;
+        }
+        .mood-selector {
+            display: flex;
+            gap: 15px;
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+        .mood-item { cursor: pointer; opacity: 0.3; transition: 0.2s; }
+        .mood-item.active { opacity: 1; transform: scale(1.2); }
+    
+        .mood-filter-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .mood-filter-item {
+            cursor: pointer;
+            opacity: 0.4;
+            transition: 0.2s;
+            padding: 5px;
+            border-radius: 50%;
+        }
+        .mood-filter-item.active {
+            opacity: 1;
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+        .calendar-day {
+            padding: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+        }
+        .calendar-day:hover { background: #f0f0f0; }
+        .has-entry::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 50%;
+        }
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .kawaii-select {
+            appearance: none;
+            background-color: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 20px;
+            padding: 8px 30px 8px 15px;
+            color: var(--text-color);
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffb7c5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+            transition: 0.2s;
+        }
+        
+        .image-pick-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 0 #ff9db0;
+            margin-top: 10px;
+        }
+        .tag-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #1e293b;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 2px;
+            cursor: pointer;
+        }
+
+#tag-sort {
+    margin-left: auto;
+}
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .gallery-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .viewer-images {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 1rem;
+        }
+        .viewer-img {
+            height: 150px;
+            border-radius: 8px;
+            cursor: zoom-in;
+        }
+        #img-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #img-modal img { max-width: 95%; max-height: 95%; object-fit: contain; }
+
+        .flashback-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            cursor: pointer;
+        }
+        .flashback-item:last-child { border-bottom: none; }
+        .flashback-label { font-size: 0.7rem; font-weight: bold; color: var(--primary-color); text-transform: uppercase; }
+
+        .chart-controls {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        .chart-btn {
+            background: #eee;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .chart-btn.active { background: var(--primary-color); color: white; }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .search-row-1 { display: flex; gap: 8px; width: 100%; }
+        .date-picker-trigger {
+            background: var(--card-bg);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+        .date-picker-trigger input[type="date"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%; height: 100%; left: 0; top: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-danger { background: #ff4d4d; color: white; }
+        .hidden { display: none !important; }
+        .forget-btn {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 0.8rem;
+            text-decoration: underline;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 500px) { .heatmap-container { grid-template-columns: repeat(20, 1fr); } }
+        @media (max-width: 400px) { .heatmap-container { grid-template-columns: repeat(10, 1fr); } }
+
+.firework-particle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1; 
+    animation: firework-fade 1.2s ease-out forwards;
+}
+
+@keyframes firework-fade {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+}
+
+.diary-preview, 
+.diary-entry-body, 
+#view-diary-content,
+.view-content {
+    white-space: pre-wrap !important; 
+    line-height: 1.5 !important;      
+    word-break: break-all;          
+}
+
+
+.diary-preview div, .diary-preview p,
+#view-diary-content div, #view-diary-content p {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+    </style>
+</head>
+<body class="font-standard">
+    <div id="lock-screen">
+        <div class="lock-container" id="lock-standard">
+            <i data-lucide="lock" style="width: 48px; height: 48px; color: var(--primary-color);"></i>
+            <h2 id="lock-title">パスコードを入力</h2>
+            <p id="lock-msg">※アプリを保護しています</p>
+            <input type="password" id="pass-input" placeholder="••••">
+            <br>
+            <button class="btn btn-primary" onclick="unlockApp()">解除</button>
+            <div id="first-setup-msg" class="hidden" style="margin-top:10px; font-size: 0.8rem;">
+                ※初回起動です。お好きなパスコードを設定し、次回のログイン時までに忘れないようにしてください。
+            </div>
+            <button class="forget-btn" id="forget-trigger" onclick="showRecovery()">パスコードを忘れた場合</button>
+        </div>
+
+        <div class="lock-container hidden" id="lock-recovery">
+            <i data-lucide="shield-alert" style="width: 48px; height: 48px; color: var(--accent-color);"></i>
+            <h3>本人確認</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 10px;">本人確認パスコードと合言葉を入力してください</p>
+            <input type="password" id="recovery-fix-pass" placeholder="本人確認パスコード">
+            <input type="text" id="recovery-keyword" placeholder="合言葉">
+            <br>
+            <button class="btn btn-primary" onclick="verifyRecovery()">確認</button>
+            <br>
+            <button class="forget-btn" onclick="hideRecovery()">戻る</button>
+        </div>
+    </div>
+
+  <!-- img-modal 部分を以下に置き換えてください -->
+<div id="img-modal" onclick="closeImageModal(event)">
+    <div style="
+        position: relative; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+    ">
+        <img
+            id="modal-img"
+            src=""
+            alt="拡大画像"
+            onclick="closeImageModalDirect(event)"
+            style="
+                max-width: 100%;
+                max-height: 100vh;
+                object-fit: contain;
+                border-radius: 3px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            "
+        >
+        
+        <button
+            id="delete-image-btn"
+            class="delete-image-btn"
+            onclick="deleteGalleryImage(event)"
+            style="display:none; 
+                   position:absolute;
+                   bottom: 5px;
+                   left: 5%;
+                   transform: translateX(-50%);
+                   width: 30px;
+                   height: 30px;
+                   border:none;
+                   border-radius:50%;
+                   background:rgba(255, 0, 60, 0.95);
+                   color:white;
+                   font-size: 12px;
+                   cursor:pointer;
+                   z-index:10;
+                   box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+                   backdrop-filter: blur(6px);
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;">
+            <i data-lucide="trash-2" style="width:17px; height:17px;"></i>
+        </button>
+    </div>
+</div>
+    <header id="app-header">ホーム</header>
+    <main id="app-main">
+        <section id="view-home" class="view active">
+            <div id="notification-area" class="notification-bar"></div>
+            <div class="dashboard-header">
+                <div>
+                    <h2 id="current-date-display">2026年3月16日</h2>
+                    <p id="status-greeting">今日はどんな1日だったかな？さっそく記録しよう！</p>
+                </div>
+            </div>
+            <div class="card">
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 id="home-list-title" style="margin:0;">最近の日記</h3>
+        <div class="chart-controls" style="margin:0;">
+            <button id="btn-show-diaries" class="chart-btn active" onclick="switchHomeList('diary')">📝</button>
+            <button id="btn-show-schedules" class="chart-btn" onclick="switchHomeList('schedule')">📅</button>
+        </div>
+    </div>
+    <div id="recent-diaries"></div>
+    <div id="recent-schedules" class="hidden"></div>
+</div>
+            <div class="card">
+                <h3>過去の日記</h3>
+                <div id="flashback-container"></div>
+            </div>
+            <div class="card">
+                <h3>100日感情ヒートマップ</h3>
+                <div id="streak-display" style="text-align: right; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;"></div> 
+                <div class="heatmap-container" id="heatmap"></div>
+                <div style="font-size: 0.7rem; margin-top:10px; display:flex; gap:10px; justify-content: center;">
+                <div id="streak-container" style="text-align: right; margin-bottom: 8px; font-weight: bold; color: var(--primary-color);">
+</div>
+                    </div>
+<b><span>ちょっとずつカラフルに染まるの、ワクワクしない？</span></b>
+                </div>
+            <div class="card">
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin:0;">今月の統計</h3>
+                    <div class="chart-controls">
+                        <button class="chart-btn active" onclick="setChartType('doughnut', this)">◯</button>
+                        <button class="chart-btn" onclick="setChartType('bar', this)">| |</button>
+                        <button class="chart-btn" onclick="setChartType('line', this)">/\/</button>
+                    </div>
+                </div>
+                <p style="font-size: 0.8rem; margin-bottom: 5px;">投稿数: <span id="stat-count-month">0</span>件</p>
+                <div style="height: 180px; position: relative;">
+                    <canvas id="moodChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-diaries" class="view">
+            <div class="card search-container">
+                <div class="search-row-1">
+                    <input type="text" id="search-input" placeholder="日記を検索..." style="flex:1; padding:10px; border-radius:8px; border:1px solid #ddd;">
+                    <div class="date-picker-trigger">
+                        <i data-lucide="calendar-search" style="width:20px; height:20px;"></i>
+                        <input type="date" id="search-date-input" onchange="filterBySpecificDate(this.value)">
+                    </div>
+                </div>
+                <div class="mood-filter-container">
+                    <span class="mood-filter-item" data-filter-mood="1" onclick="toggleMoodFilter(1)">😭</span>
+                    <span class="mood-filter-item" data-filter-mood="2" onclick="toggleMoodFilter(2)">😡</span>
+                    <span class="mood-filter-item" data-filter-mood="3" onclick="toggleMoodFilter(3)">😐</span>
+                    <span class="mood-filter-item" data-filter-mood="4" onclick="toggleMoodFilter(4)">😊</span>
+                    <span class="mood-filter-item" data-filter-mood="5" onclick="toggleMoodFilter(5)">🤩</span>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+    <h3 id="diary-total-count" style="margin:0;">全 0 件</h3>
+    <select id="diary-sort" class="kawaii-select" onchange="changeDiarySort(this.value)">
+        <option value="new">新しい順</option>
+        <option value="old">古い順</option>
+    </select>
+</div>
+            <div id="all-diaries-list"></div>
+        <div style="display:flex; justify-content:center; gap:12px; margin-top:20px; flex-wrap:wrap;">
+    <button class="btn" id="diary-prev-btn" onclick="prevDiaryPage()">◀ 前へ</button>
+    <span id="diary-page-info"></span>
+    <button class="btn" id="diary-next-btn" onclick="nextDiaryPage()">次へ ▶</button>
+</div>
+        </section>
+
+        <section id="view-viewer" class="view">
+            <div class="card">
+                <div style="display:flex; justify-content: space-between; margin-bottom:1rem;">
+                    <button class="btn" onclick="switchTab('lastTabId')">戻る</button>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-danger" id="viewer-delete-btn">削除</button>
+                        <button class="btn btn-primary" id="viewer-edit-btn">編集する</button>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content: space-between; align-items: center;">
+                    <span id="viewer-date" class="diary-date"></span>
+                    <span id="viewer-mood" style="font-size: 1.5rem;"></span>
+                </div>
+                <h2 id="viewer-title" style="margin: 10px 0;"></h2>
+                <div id="viewer-tags" style="margin-bottom: 1rem;"></div>
+                <div id="viewer-images" class="viewer-images"></div>
+                <div id="viewer-content" style="line-height: 1.5; white-space: pre-wrap;"></div>
+                <div id="viewer-char-count" style="text-align: right; color: var(--accent-color); margin-top: 12px; font-size: 0.85rem; font-weight: 500;">
+    0 文字
+</div>
+            </div>
+        </section>
+
+        <section id="view-calendar" class="view">
+            <div class="card">
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:1rem;">
+                    <button class="btn" onclick="changeMonth(-1)"><</button>
+                    <div style="position:relative; text-align:center;">
+                        <h3 id="calendar-month-year" style="margin:0; cursor:pointer;">2024年3月</h3>
+                        <input type="month" id="calendar-goto-input" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;" onchange="gotoCalendarMonth(this.value)">
+                    </div>
+                    <button class="btn" onclick="changeMonth(1)">></button>
+                </div>
+                <div class="calendar-grid" id="calendar-header">
+                    <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+                </div>
+                <div class="calendar-grid" id="calendar-body"></div>
+            </div>
+            <div id="selected-day-entries" style="margin-top:1rem;"></div>
+        </section>
+
+        <section id="view-gallery" class="view">
+    <h3 id="gallery-total-count" style="margin:0 0 12px 0;">全 0 枚のギャラリー</h3>
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:12px;
+        gap:10px;
+        flex-wrap:wrap;
+    ">
+
+        <select
+            id="gallery-sort"
+            class="kawaii-select"
+            onchange="changeGallerySort(this.value)"
+        >
+            <option value="new">新しい順</option>
+            <option value="old">古い順</option>
+        </select>
+
+    </div>
+
+    <div class="gallery-grid" id="gallery-container"></div>
+<div
+    style="
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        gap:12px;
+        margin-top:20px;
+        flex-wrap:wrap;
+    "
+>
+    <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:20px; flex-wrap:wrap;">
+    <button class="btn" id="gallery-prev-btn" onclick="prevGalleryPage()">◀ 前へ</button>
+    <span id="gallery-page-info"></span>
+    <button class="btn" id="gallery-next-btn" onclick="nextGalleryPage()">次へ ▶</button>
+</div>
+        </section>
+
+        <section id="view-tags" class="view">
+    <h3>タグ一覧</h3>
+    <div class="card" id="tags-cloud"></div>
+    
+    <!-- タグ選択後だけ表示されるエリア -->
+    <div id="tag-filter-area" class="hidden" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
+        
+        <select id="tag-sort" class="kawaii-select" onchange="changeTagSort(this.value)">
+            <option value="new">新しい順</option>
+            <option value="old">古い順</option>
+        </select>
+    </div>
+
+    <div id="tag-filtered-results"></div>
+    
+    <div id="tag-pagination-area" class="hidden" style="display:flex; justify-content:center; gap:12px; margin-top:20px; flex-wrap:wrap;">
+        <button class="btn" id="tag-prev-btn" onclick="prevTagPage()">◀ 前へ</button>
+        <span id="tag-page-info"></span>
+        <button class="btn" id="tag-next-btn" onclick="nextTagPage()">次へ ▶</button>
+    </div>
+</section>
+
+        <section id="view-settings" class="view">
+            <h3>設定</h3>
+            <div class="card">
+                <div class="setting-row">
+    <span><strong>テーマデザイン</strong></span>
+    <select id="theme-select" class="kawaii-select" onchange="setTheme(this.value)">
+        <option value="default">クラシック</option>
+        <option value="yumekawa">ゆめかわ</option>
+        <option value="dark">ダーク</option>
+        <option value="night">夜空</option>
+        <option value="edamame" id="option-edamame" style="display: none;">えだまめ</option>
+        <option value="lucky" id="option-lucky" style="display: none;">ラッキー</option>
+        <option value="devil" id="option-devil" style="display: none;">デビル</option>
+         <option value="scholar" id="option-scholar" style="display:none;">アルファベータ</option>
+        <option value="terminal" id="option-terminal" style="display:none;">タイムテーブル
+</option>
+         <option value="master" id="option-master" style="display: none;">モダンノート</option>
+        <option value="legend" id="option-legend" style="display: none;">レジェンド</option>
+        <option value="cosmos" id="option-cosmos" style="display: none;">ギャラクシー</option>
+    </select>
+</div>
+            <div class="card">
+                <h4>データ管理</h4>
+                <div class="setting-row">
+                    <button class="btn btn-primary" onclick="exportData()">データをダウンロード</button>
+                </div>
+                <div class="setting-row">
+                    <label class="btn btn-primary" style="display:inline-block;">
+                        データ読み込み
+                        <input type="file" id="import-file" class="hidden" onchange="importData(event)">
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <button class="btn btn-danger" onclick="startFullInitialization()" style="background-color: #e94560; color: white;">
+    全データ初期化
+</button>
+                </div>
+            </div>
+            <div class="card">
+                <h4>セキュリティ</h4>
+                <div class="setting-row">
+                    <span>パスコード変更</span>
+                    <button class="btn" onclick="changePassword()">設定する</button>
+                </div>
+            </div>
+        <div class="card">
+    <h4>サポート</h4>
+    <div class="setting-row" style="cursor: pointer;" onclick="switchTab('about')">
+        <span><strong>このアプリについて / 使い方ガイド</strong></span>
+        <i data-lucide="chevron-right"></i>
+    </div>
+</div>
+</section>
+<section id="view-about" class="view">
+    <div class="card">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <button class="btn" onclick="switchTab('settings')">戻る</button>
+            <h3 style="margin:0;">このアプリについて</h3>
+        </div>
+        <div style="line-height: 1.8; font-size: 0.95rem;">
+            <h3>📓 でじ帖 - Offline Diary とは</h3>
+            <p>
+        「でじ帖(でじちょう)」は、インターネット上の喧騒から切り離された、あなただけのために用意された<strong>「オフライン完結型ダイアリー」</strong>です。
+        SNSで誰かの反応を気にしたり、クラウドサービスに個人データを預けたりすることに、ふと疲れを感じることはありませんか？
+    </p>
+    
+    <p>
+        本アプリは、そんな現代において、自分の思考と純粋に向き合える「静かな場所」を提供することを目指して開発されました。
+        単なる日記帳としての機能を超え、あなたの日常を記録し、自己理解を深めるためのパートナーとなることを意図しています。
+    </p>
+    <p>このアプリ名の由来は「デジタル」を意味する「でじ」と、手帳や記録帳を表す「帖」を組み合わせて作られています。
+単なるメモアプリや作業ツールではなく、<strong>“自分の日常や感情、思い出を静かに積み重ねていく記録帳”</strong>のような雰囲気を表した名前です。</p>
+
+    <div style="margin-left: 10px; border-left: 3px solid var(--accent-color); padding-left: 15px; margin-bottom: 2rem;">
+        <h4>1. なぜ「オフライン」なのか</h4>
+        <p>
+            一般的な日記アプリの多くは、データを運営会社のサーバーに送信します。しかし「でじ帖」は、あなたが入力した一文字、添付した一枚の写真を、決して外へは出しません。
+            データはすべて、あなたがお使いのデバイスの内部（ブラウザの保存領域）にのみ、隔離保存されます。<br>
+            この「手元にしかない」という不自由さこそが、「誰にも絶対に見られない」という安心感をつくり、あなたの最も素直な言葉を引き出す鍵となります。<br>
+            ( ※このように説明しておりますが、実際は開発者である私の技術力不足により外部接続のような開発を進めることができない、ということがオフラインである最大の理由となります。これによって利用者の皆様には少々不便な思いをお掛けしてしまう機能が一部存在しておりますが、何卒ご了承ください。)
+        </p>
+
+        <h4>2. 記憶の彩りを可視化する</h4>
+        <p>
+            私たちは、毎日たくさんの感情を抱いて生きています。しかし、その多くは時間の経過とともに霧散してしまいます。
+            「でじ帖」は、文章だけでなく「5段階の感情アイコン」や「写真」を組み合わせることで、その時の心の色彩を鮮明に保存します。<br>
+            積み重ねた日々は「ヒートマップ」や「グラフ」として可視化され、数ヶ月後に振り返ったとき、自分でも気づかなかった心のバイオリズムやパターンなどを、客観的なデータとして発見できるはずです。
+        </p>
+
+        <h4>3. 自由で心地よい空間づくり</h4>
+        <p>
+            長く使い続けていただくために、デザインやゲーミフィケーションにもこだわりました。
+            あなたの今の気分にフィットする多彩な<strong>テーマデザイン(全12種類)</strong>を用意しています。
+            また、連続更新カウント機能や特定のアクションを起こすことによって新しいカラーテーマが解放される仕組みも実装しているので、日記を書くモチベーションを高めることができます。
+            お気に入りの喫茶店でノートを広げるような感覚で、いつでもどこでも、自分だけの日記”帖”を開いてください。
+        </p>
+    </div>
+
+            <h3>📖 使い方と機能の詳細ガイド</h3>
+        
+        <p>「でじ帖」は、単なる日記帳以上の体験を提供するために設計されています。主な4つの機能について、その詳細な活用方法を解説します。</p>
+
+        <div style="margin-left: 10px; border-left: 3px solid var(--accent-color); padding-left: 15px;">
+            <h4>1. 感情と記憶を刻む「日記保存」</h4>
+            <p>
+                画面右下の万年筆ボタン、またはカレンダーの各日付から日記を作成できます。
+                最大の特徴は、その日の気分を5段階のアイコンで選択できる点です。言葉にできないモヤモヤや、最高にハッピーな瞬間を直感的に記録してください。
+                テキストエリアでは文字数制限を気にせず、思いのままに綴ることができます。また、画像は複数枚の同時添付に対応しており、日常の風景を視覚的にも残せます。(ただし、お使いのデバイスによっては日記1枚につき大量の枚数の写真保存や数千文字を超える文字数などが原因で、本アプリ及びデバイスの動作が重くなる可能性があります。)
+                入力されたデータは、保存ボタンを押した瞬間にブラウザのIndexedDBという高速なデータベースに書き込まれます。
+                <br>また、保存した日記は「日記」ページから振り返ることができます。アプリ内動作の高速化を維持させるため、過去の日記をページネーション形式として50件ずつ表示させる方法を採用しており(ギャラリー・タグは30件)、さらに検索機能やその日の感情フィルターで日記を絞ることができるため、より詳しく正確に過去の日記を検索することができます。
+            </p>
+
+            <h4>2. 予定を自由にデザインできる「カレンダーと予定管理」</h4>
+            <p>
+                カレンダー画面では、過去の記録を振り返るだけでなく、未来の予定を「タスク」として登録できます。
+                予定がある日にはカレンダー上にドットが表示され、一目でスケジュールの密度が把握可能です。
+                過去の日記と未来の予定が一つの時間軸でつながることで、あなたの生活の全体像を可視化します。
+            </p>
+
+            <h4>3. 自己理解を深める「統計と分析」</h4>
+            <p>
+                記録が蓄積されると、ホーム画面の「統計」タブが真価を発揮します。
+                <br><strong>・感情ヒートマップ：</strong> 1年間の記録頻度と感情の起伏が、タイルの色(5種類)で表現されます。どの時期に自分が活動的だったか、あるいは休息が必要だったかが視覚的に分かります。
+                <br><strong>・感情推移グラフ：</strong>直近の気分の波をラインチャートで表示します。週単位、月単位でのメンタルの安定度を確認するセルフケアツールとして活用してください。
+                これらのデータは、すべて端末内でリアルタイムに計算・生成されており、プライバシーを保ったまま高度な分析が可能です。
+            </p>
+
+            <h4>4. あなたらしさを彩る「カスタマイズ機能」</h4>
+            <p>
+                設定画面の「テーマ変更」から、アプリ全体の雰囲気を一瞬で切り替えることができます。
+                気分転換の「夜空」、集中力を高めるシンプルな「ダーク」、明るくポップな「ゆめかわ」など、その時の気分や周囲の明るさに合わせて最適なUIを選択してください。
+                また、フォントサイズや表示の細部も、あなたが長く使い続けたいと思える心地よい空間になるよう調整されています。
+            </p>
+        </div>
+
+            <section>
+    <h3>⚠️ 長く安全に使い続けるための重要事項</h3>
+    <p>
+        「でじ帖」を長期間使い続けるためには、オフラインアプリ特有の性質を理解し、適切な管理を行う必要があります。以下の4つのポイントを必ず守ってください。
+    </p>
+
+    <div style="margin-left: 10px; border-left: 3px solid var(--accent-color); padding-left: 15px; margin-bottom: 2rem;">
+        <h4>1. データのバックアップと「消失」のリスク回避</h4>
+        <p>
+            本アプリは、Googleなどの外部サーバーにデータを保存しません。データはすべて、お使いのブラウザ内の「IndexedDB」という領域に隔離されて保存されています。これは高いプライバシーを保証する一方で、以下のような場合にデータが完全に消失するリスクを伴います。
+        </p>
+        <ul>
+            <li><strong>ブラウザ閲覧履歴の「Cookieと他のサイトデータ」の削除を実行したとき。(要注意)</strong></li>
+            <li>お使いのデバイスのストレージが極端に不足し、OSによってキャッシュが強制削除されたとき。</li>
+            <li>デバイスの紛失、水没、故障により、端末自体が操作不能になったとき。</li>
+            <li><strong>言うまでもありませんが、設定に置かれている「全データ初期化」ボタンは禁断の果実です。紛失防止で4段階認証を設けていますが、取扱いに十分気をつけてください。</strong></li>
+        </ul>
+        <p>
+            <strong>【対策】</strong><br>
+            設定画面の「データをダウンロード」機能を定期的に利用してください。基本的には1ヶ月以上ダウンロードを実行しなかった場合にホーム画面の最上部に通知として表示され、ダウンロードを促されます。日記を書いた直後にJSONファイルを自分のメールアドレス宛に送信したり、信頼できるクラウドストレージ（iCloud / Google Drive等）などで保存する習慣をつけることで、データ紛失を防ぐより堅牢な防御策となります。制作者の経験上では、USBなどの外部デバイスでファイルを保存することを推奨します。ダウンロードしたデータが積み重なり、デバイスの容量を食う場合がありますが、そのときはお手数ですが、積み重なったバックアップデータを直接削除してください。
+        </p>
+
+        <h4>2. パスコードと本人確認設定の厳重管理</h4>
+        <p>
+            あなたのプライバシーを守る「パスコード」は、強力な暗号化の役割を果たしています。開発者であっても、あなたの端末内のパスコードを外部からリセットすることは物理的に不可能です。
+        </p>
+        <p>
+            もしパスコードを忘れてしまった場合、あらかじめ設定した「本人確認（合言葉）」が最後のパスとなります。
+            合言葉やヒントを設定する際は、「自分にとってずっと変わることのない事実」かつ「他人が推測しにくいもの」を選んでください。
+            また、パスコード自体を忘れないよう、物理的なノートやパスワード管理アプリに控えておくことを強く推奨します。
+        </p>
+        <h4>3. 動作環境の維持とブラウザの互換性</h4>
+        <p>
+            ブラウザの技術は日々進化しています。現在は快適に動作していても、数年後のブラウザアップデートにより挙動が変わる可能性があります。
+        </p>
+        <ul>
+            <li><strong>推奨環境：</strong> 常に最新バージョンのブラウザ（Chrome、Safari等）を使用してください。</li>
+            <li><strong>機種変更時の移行：</strong> 新しい端末へ移行する際は、古い端末で「データをダウンロード」し、<strong>クラウドストレージや外部ストレージ(USBなど)</strong>の新しい端末でそのファイルを「読み込み」することで、これまでの記録をすべて引き継ぐことができます。</li>
+            <li><strong>ストレージの空き容量：</strong> 画像を多く保存する場合、ブラウザの保存容量制限に達することがあります。定期的に不要な画像を整理するか、端末のストレージに余裕を持たせてください。</li>
+        </ul>
+        <h4>4. 長文・写真データの蓄積による「動作の重さ」と「容量制限」</h4>
+        <p>
+            「でじ帖」を数年使い続け、数千件の日記や数ギガバイトに及ぶ写真データを保存した場合、オフラインアプリ特有の挙動が発生することがあります。
+        </p>
+        <div>
+            <p><strong>【ストレージ容量の壁】</strong><br>
+            ブラウザの保存領域（IndexedDB）には、端末の空き容量に応じた制限があります(一般的にデバイス本体の50%に相当する容量)。特に高画質な写真を毎日複数枚保存し続けると、数ヶ月から数年で上限に達する可能性があります。容量が一杯になると、新しい日記が保存できなくなる、あるいは古いデータから破損するリスクが生じます。</p>
+            
+            <p><strong>【動作速度への影響】</strong><br>
+            日記の件数が膨大になると、起動時の読み込みや、統計グラフの生成、キーワード検索に時間がかかるようになります。これは、クラウドサーバーではなく、あなたのスマホやPCのパワーだけで全ての計算処理を行っているためです。</p>
+
+            <p><strong>【推奨する使用方法】</strong></p>
+            <ul>
+                <li><strong>写真の最適化：</strong> 記録に残す写真は、そのままのサイズではなく、スクリーンショットやリサイズした軽量なものを添付することを推奨します。また、このアプリ内でも画像保存時に画質を0.7倍にリサイズする処理を行っています。</li>
+                <li><strong>不要な写真の整理：</strong> 定期的に過去の日記を振り返り、重要度の低い添付画像を削除することで、ストレージの健康状態を保つことができます。</li>
+                <li><strong>書き出し機能の活用：</strong> 数年分のデータが溜まったら、一度「データをダウンロード」してPCなどに永久保存版として保管し、アプリ内を整理して「第2章」として新しく使い始めるのも、動作を軽快に保つための一つのテクニックです。</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+            <section>
+    <h3>⚖️ 利用ガイドラインと免責事項</h3>
+    <p>
+        「でじ帖」をご利用いただくにあたり、以下のガイドラインを遵守してください。本アプリは、ユーザーと開発者の信頼関係に基づいた安全な空間を目指しています。
+    </p>
+
+    <div style="margin-left: 10px; border-left: 3px solid var(--accent-color); padding-left: 15px; margin-bottom: 2rem;">
+        <h4>1. 著作権と知的財産権の取り扱い</h4>
+        <p>
+            本アプリ「でじ帖」を構成するプログラム、デザイン等の知的財産権は、開発者に帰属します。ユーザーは個人利用の範囲内で自由に本アプリを使用できますが、以下の行為を禁止します。
+        </p>
+        <ul>
+            <li>本アプリのプログラム（HTML/JS/CSS）を無断で改変し、自身のサービスとして再配布・販売すること。</li>
+            <li>「でじ帖」の名称を使用して、公式であるかのように誤認させる活動を行うこと。</li>
+        </ul>
+
+        <h4>2. 自己責任の原則（重要）</h4>
+        <p>
+            「でじ帖」は、利便性とプライバシーを追求するために「オフライン完結型」を採用しています。そのため、以下の事項についてはユーザー自身の責任となります。
+        </p>
+        <ul>
+            <li><strong>データ消失への対応：</strong> 端末の故障、ブラウザのキャッシュ削除、誤操作によるデータ消失。</li>
+            <li><strong>パスワード管理：</strong> 本人確認設定やパスコードの紛失により、データにアクセスできなくなった場合。</li>
+            <li><strong>物理的な盗難：</strong> 端末が物理的に盗難され、内容が第三者に閲覧された場合。</li>
+        </ul>
+        <p>
+            開発者は、本アプリの使用によって生じた直接的、間接的な損害（精神的苦痛、情報の流出、金銭的損失など）について、一切の賠償責任を負わないものとします。
+        </p>
+
+        <h4>3. データの取り扱いとプライバシー方針</h4>
+        <p>
+            本アプリは、設計思想として「ユーザーのデータを収集しない」ことを掲げています。
+        </p>
+        <ul>
+            <li><strong>外部通信の不在：</strong> 日記の内容、写真、設定情報はすべてお使いのブラウザ内部にのみ保存され、外部サーバーへ送信されることはありません。</li>
+            <li><strong>クッキー（Cookie）等の利用：</strong> 解析や広告のためのクッキーは使用していません。プライバシーを侵害する追跡は一切行われません。</li>
+        </ul>
+    </div>
+</section>
+            <p style="text-align: center; margin-top: 2rem; opacity: 0.6;">
+                ver 2.0.0 © 2026 でじ帖プロジェクト
+            <br>created by northen maiko (北の舞妓さん)
+            </p>
+    </div>
+        </section>
+
+        <section id="view-editor" class="view">
+            <div class="card editor-container">
+                <div style="display:flex; justify-content: space-between;">
+                    <button class="btn" onclick="switchTab('home')">キャンセル</button>
+                    <button class="btn btn-primary" onclick="saveDiary()">保存</button>
+                </div>
+                <input type="text" id="diary-title" placeholder="タイトル" style="font-size:1.2rem; padding:10px; border:none; border-bottom:2px solid var(--primary-color); outline:none; background:transparent;">
+                <input type="date" id="diary-date-input">
+                
+                <div id="diary-only-fields">
+                    <div class="mood-selector">
+    <button type="button" class="mood-btn" onclick="setMood(1)">😭</button>
+    <button type="button" class="mood-btn" onclick="setMood(2)">😡</button>
+    <button type="button" class="mood-btn" onclick="setMood(3)">😐</button>
+    <button type="button" class="mood-btn" onclick="setMood(4)">😊</button>
+    <button type="button" class="mood-btn" onclick="setMood(5)">🤩</button>
+</div>
+                    <div class="toolbar">
+                        <button class="tool-btn" onclick="execCmd('bold')"><b>B</b></button>
+                        <button class="tool-btn" onclick="execCmd('italic')"><i>I</i></button>
+                        <select id="templateSelect" class="tool-btn">
+    <option value="">テンプレートを選択</option>
+
+    <optgroup label="日常">
+        <option value="daily">日常テンプレ</option>
+        <option value="memo">記録テンプレ</option>
+        <option value="once">一言テンプレ</option>
+    </optgroup>
+　　<optgroup label="タスク">
+        <option value="study">勉強テンプレ</option>
+        <option value="work">仕事テンプレ</option>
+ 　　　 <option value="activity">作業テンプレ</option>
+           
+  </optgroup>
+        
+    <optgroup label="健康">
+        <option value="health">体調テンプレ</option>
+        <option value="exercise">運動テンプレ</option>
+        <option value="meal">食事テンプレ</option>
+    </optgroup>
+
+    <optgroup label="趣味">
+        <option value="hobby">遊びテンプレ</option>
+        <option value="recommend">推し活テンプレ</option>
+        <option value="travel">旅行テンプレ</option>
+　　　　</optgroup>
+        
+    <optgroup label="ネタ">
+        <option value="sense">五感テンプレ</option>
+        <option value="frustrate">愚痴テンプレ</option>
+        <option value="last">遺言テンプレ</option>　　
+    </optgroup>   
+</select>
+    <button class="tool-btn" onclick="insertSelectedTemplate()">
+本文に挿入
+</button>   
+                    </div>
+                </div>
+                <div id="diary-content" contenteditable="true" placeholder="ここに本文を書きましょう..."></div>
+<div id="char-count" style="text-align: right; font-size: 0.85rem; color: var(--primary-color); margin-top: 6px; font-weight: 500;">
+    0 文字
+</div>
+                <div id="diary-only-footer">
+                    <input type="text" id="diary-tags" placeholder="タグ (カンマ[,]区切り)" style="width: 60%; padding: 6px 12px; font-size: 0.8rem; border-radius: 20px; border: 1px solid #ddd; margin-top: 10px;">
+                    <div id="image-upload-zone">
+                        <p style="font-size:0.8rem; margin-bottom:0;">添付は3枚以下が推奨です
+                        </p>
+                        <label class="image-pick-btn">
+                            <i data-lucide="camera" style="width:18px; height:18px;"></i>
+                            写真を選ぶ
+                            <input type="file" id="diary-images" class="hidden" multiple accept="image" onchange="handleImagePreview(event)">
+                        </label>
+                        <div id="image-previews" style="display:flex; gap:5px; margin-top:15px; overflow-x:auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="fab-container">
+        <div class="fab-menu" id="fab-menu">
+            <div class="fab-menu-item" onclick="openEditor('schedule')"><i data-lucide="calendar-plus"></i>予定を立てる</div>
+            <div class="fab-menu-item" onclick="openEditor('diary')"><i data-lucide="pen"></i>日記を書く</div>
+        </div>
+        <div class="fab" id="fab-main" onclick="toggleFabMenu()"><i data-lucide="pen-tool"></i></div>
+    </div>
+
+    <nav id="tab-bar">
+        <div class="tab-item active" onclick="switchTab('home')"><i data-lucide="home"></i><span>ホーム</span></div>
+        <div class="tab-item" onclick="switchTab('diaries')"><i data-lucide="book-open"></i><span>日記</span></div>
+        <div class="tab-item" onclick="switchTab('calendar')"><i data-lucide="calendar"></i><span>カレンダー</span></div>
+        <div class="tab-item" onclick="switchTab('gallery')"><i data-lucide="image"></i><span>ギャラリー</span></div>
+        <div class="tab-item" onclick="switchTab('tags')"><i data-lucide="tag"></i><span>タグ</span></div>
+        <div class="tab-item" onclick="switchTab('settings')"><i data-lucide="settings"></i><span>設定</span></div>
+    </nav>
+    <script>
+        let diaries = [];
+        let schedules = [];
+        
+        let cachedSortedDiaries = null; 
+        let diaryMap = new Map();      
+        let scheduleMap = new Map();   
+        let diaryDateMap = new Map();
+        let scheduleDateMap = new Map();
+        
+        let config = { password: '', theme: 'default', font: 'font-standard', customColors: null, chartType: 'doughnut', lastBackup: null, recoverySet: false, hasUnlockedLegend: false, hasUnlockedEdamame: false, hasUnlockedMaster: false, hasUnlockedDevil: false, hasUnlockedLucky: false, hasUnlockedTerminal: false, hasUnlockedScholar: false };
+        let currentEditingId = null;
+        let lastTabId = 'home';
+        let currentEditingType = 'diary';
+        let selectedMood = 4;
+        let activeMoodFilter = null; 
+        let tempImages = [];
+        let currentGalleryImage = null;
+        let calendarDate = new Date();
+        let galleryPage = 1;
+const GALLERY_PAGE_SIZE = 30;
+let gallerySortOrder = 'new';
+let diaryPage = 1;
+let tagPage = 1;
+const DIARY_PAGE_SIZE = 50;
+let diarySortOrder = 'new';
+const TAG_PAGE_SIZE = 30;
+let tagSortOrder = 'new';
+let currentTag = null;
+        
+        const DB_NAME = 'dejiDB';
+        const DB_VERSION = 2;
+        let db;
+
+        function setMood(n) {
+    selectedMood = n;
+    
+ 
+    document.querySelectorAll('.mood-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+   
+    const buttons = document.querySelectorAll('.mood-btn');
+    if(buttons[n-1]) {
+        buttons[n-1].classList.add('active');
+    }
+}
+        
+function invalidateCaches() {
+    cachedSortedDiaries = null;
+    diaryMap = new Map(diaries.map(d => [d.id, d]));
+    scheduleMap = new Map(schedules.map(s => [s.id, s]));
+    
+    diaryDateMap = new Map();
+    diaries.forEach(d => {
+        if (!diaryDateMap.has(d.date)) {
+            diaryDateMap.set(d.date, []);
+        }
+        diaryDateMap.get(d.date).push(d);
+    });
+    
+    scheduleDateMap = new Map(schedules.map(s => [s.date, s]));
+
+    if (config.hasUnlockedLegend) {
+        const opt = document.getElementById('option-legend');
+        if (opt) opt.style.display = 'block';
+    }
+if (config.hasUnlockedEdamame) {
+    const opt = document.getElementById('option-edamame');
+    if (opt) opt.style.display = 'block';
+}
+if (config.hasUnlockedLucky) {
+    const opt = document.getElementById('option-lucky');
+    if (opt) opt.style.display = 'block';
+}
+if (config.hasUnlockedDevil) {
+    const opt = document.getElementById('option-devil');
+    if (opt) opt.style.display = 'block';
+}
+if (config.hasUnlockedTerminal) {
+    const opt = document.getElementById('option-terminal');
+    if (opt) opt.style.display = 'block';
+}
+if (config.hasUnlockedScholar) {
+    const opt = document.getElementById('option-scholar');
+    if (opt) opt.style.display = 'block';
+}
+if (config.hasUnlockedMaster) {
+    const opt = document.getElementById('option-master');
+    if (opt) opt.style.display = 'block';
+}
+}
+        function getSortedDiaries() {
+            if (!cachedSortedDiaries) {
+                cachedSortedDiaries = [...diaries].sort((a,b) => b.date.localeCompare(a.date));
+            }
+            return cachedSortedDiaries;
+        }
+
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('diaries')) db.createObjectStore('diaries', { keyPath: 'id' });
+                    if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
+                    if (!db.objectStoreNames.contains('schedules')) db.createObjectStore('schedules', { keyPath: 'id' });
+                };
+                request.onsuccess = (e) => { db = e.target.result; resolve(); };
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+async function loadData() {
+    diaries = await getAllFromDB('diaries');
+    schedules = await getAllFromDB('schedules');
+    const storedConfig = await getFromDB('config', 'main');
+    if (storedConfig) { 
+        delete storedConfig.key; 
+        config = { ...config, ...storedConfig }; 
+    }
+    
+    await cleanupPassedSchedules();
+    
+    invalidateCaches();
+}
+
+async function cleanupPassedSchedules(force = false) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const passedSchedules = schedules.filter(s => s.date < todayStr);
+    
+    if (passedSchedules.length === 0) {
+        console.log(`✅ 削除対象なし (${todayStr})`);
+        return;
+    }
+
+    console.log(`🧹 \( {passedSchedules.length}件の過去予定を削除します ( \){todayStr}基準)`);
+    
+
+    for (let s of passedSchedules) {
+        await deleteFromDB('schedules', s.id);
+    }
+    
+    schedules = schedules.filter(s => s.date >= todayStr);
+    
+    invalidateCaches();
+    
+    const isCalendarActive = document.getElementById('view-calendar').classList.contains('active');
+    const isHomeActive = document.getElementById('view-home').classList.contains('active');
+    
+    if (isCalendarActive) renderCalendar();
+    if (isHomeActive) renderDashboard();
+    
+    console.log(`✅ ${passedSchedules.length}件の過去予定を削除完了`);
+}
+        async function saveDataToDB(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                tx.objectStore(storeName).put(data);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        async function deleteFromDB(storeName, id) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                tx.objectStore(storeName).delete(id);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        async function getAllFromDB(storeName) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const request = tx.objectStore(storeName).getAll();
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        async function getFromDB(storeName, id) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const request = tx.objectStore(storeName).get(id);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+
+function launchFirework() {
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * (window.innerHeight * 0.83); 
+    const colors = ['#ff8a80', '#ffd700', '#a2d2ff', '#ffb7c5', '#ffffff', '#008000','#ffc0cb', '#ffa500', '#00ff00', '#ffd700', '#165e83', '#b7282e', '#68be8d', '#39ff14', '#663399', '#bf00ff', '#00f3ff', '#b3e5fc', '#c8e6c9', '#fff9c4', '#e1bee7', '#ffe0b2', '#fffff0', '#f0fff0', '#f0f8ff', '#ff34e1', '#b0e0e6', '#e0eadd'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    
+    for (let i = 0; i < 120; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'firework-particle';
+        particle.style.backgroundColor = color;
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 100 + 50;
+        particle.style.setProperty('--dx', Math.cos(angle) * velocity + 'px');
+        particle.style.setProperty('--dy', Math.sin(angle) * velocity + 'px');
+        
+        document.body.appendChild(particle);
+        
+        setTimeout(() => particle.remove(), 1200);
+    }
+}
+
+
+function launchMultipleFireworks() {
+    const count = Math.floor(Math.random() * 2) + 1;
+    
+    for (let i = 0; i < count; i++) {
+
+        setTimeout(launchFirework, Math.random() * 1000);
+    }
+}
+        
+        function startRandomFireworks() {
+    launchMultipleFireworks();
+
+    const nextInterval = Math.random() * 3000 + 1000;
+    
+    setTimeout(startRandomFireworks, nextInterval);
+}
+function checkNewYearFireworks() {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const birthday = schedules.find(s => s.date === todayStr && s.title.includes('誕生日'));
+    if ((month === 12 && date === 31) || (month === 1 && date === 1) || (birthday)) {
+        startRandomFireworks();
+    }
+}
+        window.onload = async () => {
+            await initDB();
+            await loadData();
+            lucide.createIcons();
+            checkSecurity();
+            await cleanupPassedSchedules(true);   
+            renderAll();
+            applyTheme();
+        checkNewYearFireworks();
+
+            await cleanupPassedSchedules();     
+            
+         
+            setInterval(async () => {
+                await cleanupPassedSchedules();
+            }, 3600000); 
+        };
+
+        function checkSecurity() {
+            if (!config.password) {
+                document.getElementById('lock-title').innerText = '初期パスコード設定';
+                document.getElementById('first-setup-msg').classList.remove('hidden');
+                document.getElementById('forget-trigger').classList.add('hidden');
+            }
+        }
+
+        function unlockApp() {
+            const input = document.getElementById('pass-input').value;
+            if (!config.password) {
+                if (input.length > 0) { config.password = input; saveConfig(); document.getElementById('lock-screen').style.transform = 'translateY(-100%)'; }
+            } else {
+                if (input === config.password) { document.getElementById('lock-screen').style.transform = 'translateY(-100%)'; }
+                else { alert('パスコード一致しません。'); }
+            }
+        }
+
+        function showRecovery() {
+    document.getElementById('lock-standard').classList.add('hidden');
+    document.getElementById('lock-recovery').classList.remove('hidden');
+    const recoveryContainer = document.getElementById('lock-recovery');
+    let hintEl = document.getElementById('recovery-hint-display');
+    
+    if (!hintEl) {
+        hintEl = document.createElement('p');
+        hintEl.id = 'recovery-hint-display';
+        hintEl.style.color = '#888';
+        hintEl.style.fontSize = '0.75rem';
+        hintEl.style.marginTop = '10px';
+        hintEl.style.marginBottom = '2px';
+        hintEl.style.fontStyle = 'italic';
+        const keywordInput = document.getElementById('recovery-keyword');
+        keywordInput.parentNode.insertBefore(hintEl, keywordInput);
+    }
+    
+    hintEl.textContent = config.customRecoveryHint ? `ヒント: ${config.customRecoveryHint}` : "ヒントは設定されていません。";
+}
+
+        function hideRecovery() {
+            document.getElementById('lock-standard').classList.remove('hidden');
+            document.getElementById('lock-recovery').classList.add('hidden');
+        }
+
+        async function verifyRecovery() {
+    const inputPass = document.getElementById('recovery-fix-pass').value;
+    const inputWord = document.getElementById('recovery-keyword').value;
+
+    const targetPass = config.customRecoveryPass;
+    const targetWord = config.customRecoveryWord;
+
+    if (!config.recoverySet) {
+        alert('本人確認設定が完了していません。');
+        return;
+    }
+
+    if (inputPass === targetPass && inputWord === targetWord) {
+        const newPass = prompt('本人確認が完了しました。新しいパスコードを入力してください。');
+        if (newPass) { 
+            config.password = newPass; 
+            await saveConfig(); 
+            alert('パスコードを更新しました。'); 
+            hideRecovery(); 
+            document.getElementById('pass-input').value = ''; 
+            checkSecurity(); 
+        }
+    } else { 
+        alert('入力内容が登録されている情報と一致しません。'); 
+    }
+}
+
+        function switchTab(tabId) {
+            const mainTabs = ['home', 'diaries', 'calendar', 'gallery', 'tags', 'settings'];
+            const currentActiveView = document.querySelector('.view.active');
+            
+            if (currentActiveView) {
+                const currentId = currentActiveView.id.replace('view-', '');
+               if (mainTabs.includes(currentId)) {
+                    lastTabId = currentId;
+                }
+            }
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            
+            const targetId = (tabId === 'lastTabId') ? lastTabId : tabId;
+            
+            const targetView = document.getElementById(`view-${targetId}`);
+            if (targetView) {
+                targetView.classList.add('active');
+            } else {
+                document.getElementById('view-home').classList.add('active');
+            }
+            document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
+            const targetIndex = mainTabs.indexOf(targetId);
+            if (targetIndex !== -1) {
+                document.querySelectorAll('.tab-item')[targetIndex].classList.add('active');
+            }
+            const titles = { 
+                home: 'ホーム', diaries: '日記一覧', calendar: 'カレンダー', 
+                gallery: 'ギャラリー', tags: 'タグ一覧', settings: '設定', 
+                editor: '編集する', viewer: '記録を見る' 
+            };
+            document.getElementById('app-header').innerText = titles[targetId] || 'サポート';
+
+            if (targetId === 'home') renderDashboard();
+            if (targetId === 'diaries') renderDiaryList();
+            if (targetId === 'calendar') renderCalendar();
+            if (targetId === 'gallery') renderGallery();
+            if (targetId === 'tags') renderTags();
+            
+            document.getElementById('fab-menu').classList.remove('active');
+            lucide.createIcons();
+        }
+
+function updateCharCount() {
+    const content = document.getElementById('diary-content');
+    const countEl = document.getElementById('char-count');
+    if (!content || !countEl) return;
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content.innerHTML;
+    const plainText = tempDiv.textContent || tempDiv.innerText || '';
+    
+    const count = plainText.length;
+    countEl.textContent = `${count} 文字`;
+    
+    if (count >= 1500) {
+        countEl.style.color = '#e94560';
+    } else if (count >= 800) {
+        countEl.style.color = '#ffb300';
+    } else {
+        countEl.style.color = '#22C55E';
+    }
+}
+
+function openEditor(type = 'diary', id = null) {
+
+    setTimeout(() => {
+        const contentArea = document.getElementById('diary-content');
+        if (contentArea) {
+            updateCharCount(); 
+        
+            contentArea.removeEventListener('input', updateCharCount); 
+            contentArea.addEventListener('input', updateCharCount);
+            
+            contentArea.removeEventListener('paste', updateCharCount);
+            contentArea.addEventListener('paste', () => setTimeout(updateCharCount, 10));
+        }
+    }, 100);
+}
+        function renderNotifications() {
+    const area = document.getElementById('notification-area');
+    area.innerHTML = "";
+    area.onclick = null;
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    
+    if (config.password && !config.recoverySet) {
+        area.innerHTML = `<strong>⚠️ セキュリティ設定のお願い</strong><br>パスコードを忘れた時のための「本人確認パスコード」が未設定です。ここをタップして設定してください。`;
+        area.style.display = 'block';
+        area.style.background = '#ff8a80'; 
+        area.onclick = () => showRecoverySetup();
+        return;
+    }
+
+   if (diaries.length === 0 && schedules.length === 0) {
+        area.style.display = 'none';
+        return;
+    }
+    
+    area.style.background = 'var(--accent-color)';
+
+    const lastBackupDate = config.lastBackup ? new Date(config.lastBackup) : null;
+    const THREE_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+    if (!lastBackupDate || (today - lastBackupDate) >= THREE_DAYS) {
+        area.innerHTML = `<strong>バックアップのお願い</strong><br>前回の保存から1ヶ月以上経過しています。大切な思い出を守るためにここをタップして保存してください 💾`;
+        area.style.display = 'block';
+        area.onclick = () => {
+            exportData();
+            area.style.display = 'none';
+        };
+        return; 
+    }
+
+const monthLater = new Date(today);
+    monthLater.setDate(today.getDate() + 183);
+
+    const activeSchedules = schedules.filter(s => {
+        const d = new Date(s.date);
+        d.setHours(0,0,0,0);
+        return d >= today && d <= monthLater;
+    });
+
+    const notificationTargets = [0, 1, 2, 7, 30, 92, 183];
+
+    const targetSchedules = activeSchedules.filter(s => {
+        const sDate = new Date(s.date);
+        sDate.setHours(0,0,0,0);
+        const diffDays = Math.round((sDate - today) / (1000 * 60 * 60 * 24));
+        return notificationTargets.includes(diffDays);
+    });
+
+    if (targetSchedules.length === 0) {
+        area.style.display = 'none';
+        return;
+    }
+
+
+
+area.style.display = 'block';
+
+    targetSchedules.forEach(s => {
+        const sDate = new Date(s.date);
+        sDate.setHours(0,0,0,0);
+        const diffDays = Math.round((sDate - today) / (1000 * 60 * 60 * 24));
+
+let dayText = "";
+
+if (diffDays === 0) dayText = "今日は";
+else if (diffDays === 1) dayText = "明日は";
+else if (diffDays === 2) dayText = "明後日は";
+else if (diffDays === 7) dayText = "1週間後に";
+else if (diffDays === 30) dayText = "1ヶ月後に";
+else if (diffDays === 92) dayText = "3ヶ月後に";
+else if (diffDays === 183) dayText = "6ヶ月後に";
+        if (dayText !== "") {
+            const messages = ["万全の準備を整えましょう！","もちろん準備万端だよね...？","最高の1日になりますように！","通知があってよかったね！","予定があるっていいね👍️","君の予定って面白いよね🤭","僕も参加したいな！🫣","ここをタップして予定を確認しよう！","カウントダウン刻む？","通知を送る仕事も疲れるのよ...🥱","🫥(一言メッセージサボり中...)","↑この予定って具体的に何をするの？👀","君、けっこうマメだねぇ🤔","いつだってゆるく生きていこう👊","このアプリまだ使ってたんだ、便利？🤨","いつもお疲れ様だよ🐣","1ヶ月連続で日記書いたらご褒美あるらしいよ...🤫","ヒートマップ全部埋めたらご褒美あるらしいよ...🤫","予定に「誕生日」を設定したら何かが起こるかもよ...🤫","👁️ 👁️(君の動向を把握中...)","ずっと君を監視しているよ❤","いってらっしゃい！🫡","もしかして、忘れてた？😏","健闘を祈る！🫡","予定に入れてるってことはやる気があるってことだよね！","僕も予定の通知を頑張るから、君も頑張って！🥺","加油〜！🔥"];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            
+            const card = document.createElement('div');
+            card.style.borderBottom = "1px solid rgba(255,255,255,0.3)";
+            card.style.padding = "8px 0";
+            card.style.cursor = "pointer";
+            card.innerHTML = `<strong>${dayText}「${s.title}」の予定があります。</strong><br>${randomMsg}`;
+            
+            card.onclick = (e) => {
+                e.stopPropagation(); 
+                openViewer(s.id);
+            };
+            area.appendChild(card);
+        }
+    });
+    if (area.lastElementChild) {
+        area.lastElementChild.style.borderBottom = "none";
+    }
+}
+
+        function toggleFabMenu() { document.getElementById('fab-menu').classList.toggle('active'); }
+
+        function openViewer(id) {
+            let item = diaryMap.get(id);
+            let isDiary = true;
+            if (!item) { item = scheduleMap.get(id); isDiary = false; }
+            if (!item) return;
+
+            document.getElementById('viewer-title').innerText = item.title;
+            document.getElementById('viewer-date').innerText = item.date;
+            if (isDiary) {
+                document.getElementById('viewer-mood').innerText = ['', '😭', '😡', '😐', '😊', '🤩'][item.mood];
+                document.getElementById('viewer-content').innerHTML = item.content;
+                document.getElementById('viewer-tags').innerHTML = item.tags.map(t => `<span class="tag-badge">${t}</span>`).join('');
+                document.getElementById('viewer-images').innerHTML = item.images.map(src => `<img src="${src}" class="viewer-img" onclick="zoomImage('${src}')">`).join('');
+                document.getElementById('viewer-edit-btn').onclick = () => openEditor('diary', id);
+                document.getElementById('viewer-delete-btn').onclick = () => deleteEntry('diary', id);
+                updateViewerCharCount(item.content);
+            } else {
+                document.getElementById('viewer-mood').innerText = '📅';
+                document.getElementById('viewer-content').innerHTML = item.content;
+                document.getElementById('viewer-tags').innerHTML = '';
+                document.getElementById('viewer-images').innerHTML = '';
+                document.getElementById('viewer-edit-btn').onclick = () => openEditor('schedule', id);
+                document.getElementById('viewer-delete-btn').onclick = () => deleteEntry('schedule', id);
+            }
+            switchTab('viewer');
+        }
+
+      function zoomImage(src, diaryId = null) {
+    currentGalleryImage = { src, diaryId };
+    
+    document.getElementById('modal-img').src = src;
+    const deleteBtn = document.getElementById('delete-image-btn');
+    
+    const isViewerActive = document.getElementById('view-viewer').classList.contains('active');
+    
+    if (deleteBtn) {
+        deleteBtn.style.display = (isViewerActive || !diaryId) ? 'none' : 'block';
+    }
+    
+    document.getElementById('img-modal').style.display = 'flex';
+}
+
+function closeImageModal(event) {
+    if (event.target.id === 'img-modal') {
+        document.getElementById('img-modal').style.display = 'none';
+    }
+}
+        function closeImageModalDirect(event) {
+    event.stopPropagation();
+
+    document.getElementById('img-modal').style.display = 'none';
+
+    currentGalleryImage = null;
+}
+
+        async function deleteEntry(type, id) {
+            if (confirm(`この${type === 'diary' ? '日記' : '予定'}を削除してもよろしいですか？`)) {
+                const store = type === 'diary' ? 'diaries' : 'schedules';
+                await deleteFromDB(store, id);
+                if (type === 'diary') diaries = diaries.filter(d => d.id !== id);
+                else schedules = schedules.filter(s => s.id !== id);
+                invalidateCaches();
+                renderAll(); switchTab('home');
+            }
+        }
+
+        function openEditor(type = 'diary', id = null) {
+    currentEditingId = id; 
+    currentEditingType = type;
+    
+    const titleInput = document.getElementById('diary-title');
+    const dateInput = document.getElementById('diary-date-input');
+    const contentDiv = document.getElementById('diary-content');
+    const tagsInput = document.getElementById('diary-tags');
+    const diaryFields = document.getElementById('diary-only-fields');
+    const diaryFooter = document.getElementById('diary-only-footer');
+
+    if (type === 'diary') { 
+        diaryFields.classList.remove('hidden'); 
+        diaryFooter.classList.remove('hidden'); 
+        titleInput.placeholder = "タイトル"; 
+    } else { 
+        diaryFields.classList.add('hidden'); 
+        diaryFooter.classList.add('hidden'); 
+        titleInput.placeholder = "タイトル"; 
+    }
+
+    if (id) {
+        const item = type === 'diary' ? diaryMap.get(id) : scheduleMap.get(id);
+        titleInput.value = item.title; 
+        dateInput.value = item.date; 
+        contentDiv.innerHTML = item.content || '';
+        
+        if (type === 'diary') { 
+            tagsInput.value = item.tags ? item.tags.join(', ') : ''; 
+            setMood(item.mood || 4); 
+            tempImages = item.images ? [...item.images] : []; 
+        }
+    } else {
+        titleInput.value = ''; 
+        dateInput.value = new Date().toISOString().split('T')[0];
+        
+        if (type === 'diary') { 
+            contentDiv.innerHTML = ''; 
+            tagsInput.value = ''; 
+            setMood(4); 
+            tempImages = []; 
+        } else { 
+            contentDiv.innerHTML = `<div><b>場所 :</b></div><div><b>時間 :</b></div><div><b>計画 :</b></div><div><b>持ち物 :</b></div><div><b>備考 :</b></div>`; 
+        }
+    }
+
+    updateImagePreviews(); 
+
+    setTimeout(() => {
+        const contentArea = document.getElementById('diary-content');
+        if (contentArea) {
+            updateCharCount(); 
+            
+            contentArea.removeEventListener('input', updateCharCount);
+            contentArea.addEventListener('input', updateCharCount);
+            
+            contentArea.removeEventListener('paste', updateCharCount);
+            contentArea.addEventListener('paste', () => setTimeout(updateCharCount, 10));
+            
+            contentArea.removeEventListener('keyup', updateCharCount);
+            contentArea.addEventListener('keyup', updateCharCount);
+        }
+    }, 150);
+
+    switchTab('editor');
+}
+
+function updatePaginationButtons(prevBtnId, nextBtnId, currentPage, totalPages) {
+    const prevBtn = document.getElementById(prevBtnId);
+    const nextBtn = document.getElementById(nextBtnId);
+    
+    if (!prevBtn || !nextBtn) return;
+
+    const primaryColor = 'var(--primary-color)';
+    const disabledColor = '#cccccc';
+    const textColor = '#000b17';      
+
+    
+    if (currentPage <= 1) {
+        prevBtn.style.background = disabledColor;
+        prevBtn.style.color = textColor;
+        prevBtn.style.borderColor = '#aaa';
+        prevBtn.style.opacity = '0.7';
+        prevBtn.style.cursor = 'not-allowed';
+    } else {
+        prevBtn.style.background = primaryColor;
+        prevBtn.style.color = textColor;
+        prevBtn.style.borderColor = primaryColor;
+        prevBtn.style.opacity = '1';
+        prevBtn.style.cursor = 'pointer';
+    }
+
+    
+    if (currentPage >= totalPages) {
+        nextBtn.style.background = disabledColor;
+        nextBtn.style.color = textColor;
+        nextBtn.style.borderColor = '#aaa';
+        nextBtn.style.opacity = '0.7';
+        nextBtn.style.cursor = 'not-allowed';
+    } else {
+        nextBtn.style.background = primaryColor;
+        nextBtn.style.color = textColor;
+        nextBtn.style.borderColor = primaryColor;
+        nextBtn.style.opacity = '1';
+        nextBtn.style.cursor = 'pointer';
+    }
+}
+        function selectMood(m) {
+            selectedMood = m;
+            document.querySelectorAll('.mood-item').forEach(el => el.classList.toggle('active', parseInt(el.dataset.mood) === m));
+        }
+
+        function toggleMoodFilter(m) {
+            if (activeMoodFilter === m) activeMoodFilter = null;
+            else activeMoodFilter = m;
+            document.querySelectorAll('.mood-filter-item').forEach(el => el.classList.toggle('active', parseInt(el.dataset.filterMood) === activeMoodFilter));
+            renderDiaryList();
+        }
+
+        function execCmd(cmd) { document.execCommand(cmd, false, null); }
+
+        function insertTemplate(type) {
+    const temps = {
+        daily: "今日の出来事：\n\nよかったこと：\n\n大変だったこと：\n\n明日の目標：\n\n今日の評価：★★★★★☆☆☆☆ (   / 5 )",
+        study: "今日学んだこと：\n\n難しかったこと：\n\n次やること：\n\n勉強の評価：★★★★★☆☆☆☆ (   / 5 )",
+        work: "取り組んだ仕事：\n\n学び・発見：\n\n課題：\n\n次への計画：\n\n対人記録：\n\n自己評価：★★★★★☆☆☆☆ (   / 5 )",
+        activity: "取り組んだ作業：\n\nうまくいったところ：\n\n詰まったところ：\n\n原因・改善：\n\n次やること：\n\n作業の評価：★★★★★☆☆☆☆ (   / 5 )",
+        travel: "旅行先：\n\n一緒に行った人：\n\n移動手段・ルート：\n\n行ったスポット・景色：\n\n一番楽しかったところ・感動したところ：\n\n食べたもの・おすすめグルメ：\n・\n・\n・\n\nハプニング：\n\nつかった金額・のこり金額：\n\n次に行きたいこと・リベンジしたいこと：\n\n明日の予定：\n\n全体の満足度：★★★★★☆☆☆☆ (   / 5 )",
+        hobby: "遊んだこと：\n・(誰と、どこで、何をした)\n\nつかった金額・のこり金額：\n\n印象に残った瞬間：\n\n良かった点・反省点：\n\n次にやりたいこと：\n\n満足度：★★★★★☆☆☆☆ (   / 5 )",
+        exercise: "運動メニュー：\n\n種目：\n\n場所：\n\n距離・時間：\n\n天候・気温：\n\nメモ：\n\nコンディション： ★★★★★☆☆☆☆ (   / 5 )",
+        health: "今日の体調：\n\n睡眠時間：　時間　分\n\n症状：\n\n気になったこと：",
+        meal: "美味しかった料理：\n\n朝・昼・夕飯：\n\n間食：\n\n幸福度：★★★★★☆☆☆☆ (   / 5 )",
+        recommend: "今日の供給：\n\n胸アツ場面：\n\n致命傷ポイント：\n\nスクショ枚数：\n\n今日のMVP：\n\n動画・サイト等のリンク：\n\n幸福度：★★★★★☆☆☆☆ (   / 5 )",
+        sense: "今日の色：\n\n今日の音：\n\n今日の匂い：\n\n今日の空気：\n\n今日の触感：\n\n気に入った感覚：",
+        frustrate: "何があった：\n\n誰がやった：\n\n本音：\n\n今の気持ち：\n\n不満度：★★★★★☆☆☆☆ (   / 5 )",
+        last: "今日の死因：\n\n最後の晩餐：\n\n未練：\n\n遺す言葉：\n\n明日復活する確率：　%",
+        memo: "URL・コピペ・言葉：\n・\n・\n・\n\nいつ・どこで見つけた？：\n\n極秘・共有：\n\n重要度：★★★★★☆☆☆☆ (   / 5 )",
+        once: "今日やったこと：\n\n食べた：\n\n見た：\n\n今ここにいる：\n\n今日の一言："
+    };
+
+    const contentArea = document.getElementById('diary-content');
+    const templateText = temps[type];
+
+    if (!templateText) return;
+
+    if (document.activeElement === contentArea) {
+        const sel = window.getSelection();
+        if (sel.rangeCount) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            
+            const textNode = document.createTextNode(templateText + "\n\n");
+            range.insertNode(textNode);
+            
+            range.setStartAfter(textNode);
+            range.setEndAfter(textNode);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    } else {
+        contentArea.innerHTML += templateText.replace(/\n/g, '<br>') + '<br><br>';
+    }
+
+    updateCharCount();
+}
+        function insertSelectedTemplate() {
+    const select = document.getElementById("templateSelect");
+    const type = select.value;
+
+    if (!type) return;
+
+    insertTemplate(type);
+}
+
+        async function resizeImage(base64Str, maxWidth = 800, maxHeight = 800) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.src = base64Str;
+        img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+    });
+}
+       async function handleImagePreview(event) {
+    const files = event.target.files;
+    const previewContainer = document.getElementById('image-previews');
+
+    for (let file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const originalBase64 = e.target.result;
+            const resizedBase64 = await resizeImage(originalBase64, 800, 800);
+            
+            tempImages.push(resizedBase64);
+        
+            updateImagePreviews(); 
+        };
+        reader.readAsDataURL(file);
+    }
+    event.target.value = ''; 
+}
+
+       function updateImagePreviews() {
+    const container = document.getElementById('image-previews');
+
+    container.innerHTML = tempImages.map((src, idx) => `
+        <div style="position:relative;">
+            <img
+                src="${src}"
+                style="
+                    width:60px;
+                    height:60px;
+                    object-fit:cover;
+                    border-radius:4px;
+                    cursor:pointer;
+                "
+                onclick="zoomImage('${src}')"
+            >
+
+            <span
+                onclick="removeTempImg(${idx})"
+                style="
+                    position:absolute;
+                    top:0;
+                    right:0;
+                    background:rgba(0,0,0,0.5);
+                    color:white;
+                    border-radius:50%;
+                    width:30px;
+                    height:30px;
+                    text-align:center;
+                    font-size:25px;
+                    cursor:pointer;
+                "
+            >
+                ×
+            </span>
+        </div>
+    `).join('');
+}
+
+        function removeTempImg(idx) { tempImages.splice(idx, 1); updateImagePreviews(); }
+
+       async function saveDiary() {
+    updateCharCount();
+    const title = document.getElementById('diary-title').value || '無題';
+    const content = document.getElementById('diary-content').innerHTML;
+    const date = document.getElementById('diary-date-input').value;
+
+    if (currentEditingType === 'diary') {
+        const tags = document.getElementById('diary-tags').value.split(',').map(t => t.trim()).filter(t => t);
+        
+        const entry = { 
+            id: currentEditingId || Date.now(), 
+            title, 
+            content, 
+            date, 
+            tags, 
+            mood: selectedMood, 
+            images: tempImages, 
+            updatedAt: Date.now(), 
+            searchText: (title + (tags ? tags.join(' ') : '')).toLowerCase()
+        };
+
+        await saveDataToDB('diaries', entry);
+
+        if (currentEditingId) {
+            const idx = diaries.findIndex(d => d.id === currentEditingId);
+            if (idx !== -1) diaries[idx] = entry;
+        } else {
+            diaries.push(entry);
+        }
+
+        const plainText = content.replace(/<[^>]*>/g, '').trim();
+        const contentLength = plainText.length;
+        
+        if (contentLength >= 1500 && !config.hasUnlockedScholar) {
+            config.hasUnlockedScholar = true;
+            
+            const opt = document.getElementById('option-scholar');
+            if (opt) opt.style.display = 'block';
+            
+            await saveConfig();
+            
+            alert('【おしゃべり？作家さん？】\n1500文字以上の長文日記を書きました！\n新しい背景テーマデザイン「アルファベータ」が解除されました✒️\nさっそく設定ページで確認しましょう');
+        }
+        invalidateCaches();   
+
+        const isToday = date === new Date().toISOString().split('T')[0];
+        
+        if (isToday || document.getElementById('view-home').classList.contains('active')) {
+            renderDashboard(); 
+        } else {
+            setTimeout(() => {
+                if (document.getElementById('view-home').classList.contains('active')) {
+                    renderDashboard();
+                }
+            }, 150);
+        }
+
+        openViewer(entry.id);
+} else {
+        const entry = { 
+            id: currentEditingId || Date.now(), 
+            title, 
+            content, 
+            date, 
+            updatedAt: Date.now()
+        };
+
+        await saveDataToDB('schedules', entry);
+
+        if (currentEditingId) {
+            const idx = schedules.findIndex(s => s.id === currentEditingId);
+            if (idx !== -1) schedules[idx] = entry;
+        } else {
+            schedules.push(entry);
+        }
+
+        invalidateCaches();
+
+        if (document.getElementById('view-home').classList.contains('active')) {
+            renderDashboard();
+        } else {
+            renderAll();
+        }
+
+        openViewer(entry.id);
+    }
+}   
+
+        function renderDashboard() {
+            cleanupPassedSchedules();
+            const getStreak = () => {
+    if (diaries.length === 0) return 0;
+
+    let streak = 0;
+    let checkDate = new Date();
+    checkDate.setHours(0, 0, 0, 0);
+
+    while (true) {
+        const dateStr = checkDate.toISOString().split('T')[0];
+        
+   if (diaryDateMap.has(dateStr) && diaryDateMap.get(dateStr).length > 0) {
+            streak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+            break;
+        }
+    }
+    return streak;
+};
+
+const happyCount = diaries.filter(d => d.mood === 4 || d.mood === 5).length;
+
+if (happyCount >= 100 && !config.hasUnlockedLucky) {
+    config.hasUnlockedLucky = true;
+
+    const opt = document.getElementById('option-lucky');
+    if (opt) opt.style.display = 'block';
+
+    saveDataToDB('config', {
+        key: 'main',
+        ...config
+    });
+
+    alert('【とてもハッピーなお知らせです！】\nハッピーな記録(🤩・😊)が合計100個に達しました！\n 新しい背景テーマデザイン「ラッキー」が解放されました！☘\nさっそく設定ページで確認しましょう！');
+} 
+const heibonCount = diaries.filter(d => d.mood === 3).length;
+
+if (heibonCount >= 100 && !config.hasUnlockedEdamame) {
+    config.hasUnlockedEdamame = true;
+
+    const opt = document.getElementById('option-edamame');
+    if (opt) opt.style.display = 'block';
+
+    saveDataToDB('config', {
+        key: 'main',
+        ...config
+    });
+
+    alert('【この時を待っていました！】\n穏やかな日常の記録(😐️)が合計100個に達しました！\n 新しい背景テーマデザイン「えだまめ」が解放されました🟢\nさっそく設定ページで確認しましょう');
+} 
+const devilCount = diaries.filter(d => d.mood === 1 || d.mood === 2).length;
+
+if (devilCount >= 100 && !config.hasUnlockedDevil) {
+    config.hasUnlockedDevil = true;
+
+    const opt = document.getElementById('option-devil');
+    if (opt) opt.style.display = 'block';
+
+    saveDataToDB('config', {
+        key: 'main',
+        ...config
+    });
+
+    alert('\n【アンハッピー(？)なお知らせです...】\nネガティブな記録(😭・😡)が合計100個に達しました...\n新しい背景テーマデザイン「デビル」が解放されました😈\nさっそく設定ページで確認しましょう');
+}
+const scheduleCount = schedules.length;
+
+if (scheduleCount >= 30 && !config.hasUnlockedTerminal) {
+
+    config.hasUnlockedTerminal = true;
+
+    const opt = document.getElementById('option-terminal');
+    if (opt) opt.style.display = 'block';
+
+    saveDataToDB('config', {
+        key: 'main',
+        ...config
+    });
+
+    alert("【予定管理のプロ？】\n1ヶ月分に相当する予定を立てました！\n新しい背景テーマデザイン「タイムテーブル」が解放されました📆\nさっそく設定ページで確認しましょう" );
+}
+           
+const streakCount = getStreak();
+    
+    if (streakCount >= 30|| config.hasUnlockedLegend) {
+        if (!config.hasUnlockedLegend) {
+            config.hasUnlockedLegend = true;
+            saveConfig();
+            alert("1ヶ月連続達成おめでとう！ \n新しい背景テーマデザイン「レジェンド」が解放されました！\nさっそく設定ページで確認しましょう！");
+        }
+        
+        const legendOption = document.getElementById('option-legend');
+        if (legendOption) {
+            legendOption.style.display = 'block';
+        }
+    }
+        if (streakCount >= 365 || config.hasUnlockedCosmos) {
+    if (!config.hasUnlockedCosmos) {
+        config.hasUnlockedCosmos = true;
+        saveConfig();
+        alert('1年連続達成おめでとう！\n新しい背景テーマデザイン「ギャラクシー」が解放されました\n1年間「でじ帖」を毎日つかってくれて本当にありがとう！\nさっそく設定ページで確認しましょう！');
+    }
+    
+    const cosmosOption = document.getElementById('option-cosmos');
+    if (cosmosOption) {
+        cosmosOption.style.display = 'block';
+    }
+}
+   if (streakCount >= 100|| config.hasUnlockedMaster) {
+        if (!config.hasUnlockedMaster) {
+            config.hasUnlockedMaster = true;
+            saveConfig();
+            alert("100日連続達成おめでとう！\n新しい背景テーマデザイン「モダンノート」が解放されました！\nさっそく設定ページで確認しましょう！");
+        }
+        
+        const masterOption = document.getElementById('option-master');
+        if (masterOption) {
+            masterOption.style.display = 'block';
+        }
+    }
+    const streakDisplay = document.getElementById('streak-display');
+
+if (streakDisplay) {
+    if (streakCount > 0) {
+        streakDisplay.style.display = 'block';
+
+        if (streakCount >= 1) {
+            streakDisplay.innerHTML = `🔥<span style="font-size: 1.2em; color: var(--accent-color);">${streakCount}</span> 日連続更新中`;
+        } 
+    } else {
+        streakDisplay.style.display = 'none';
+    }
+}
+            const now = new Date();
+            document.getElementById('current-date-display').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+            renderNotifications();
+            
+            const sortedDiaries = getSortedDiaries();
+            let greetingText = "継続は力なり！積み重ねが超大事🔥";
+const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+const birthdaySchedule = schedules.find(s => s.date === todayStr && s.title.includes('誕生日'));
+const month = now.getMonth() + 1;
+const date = now.getDate();
+const monthDate = `${month}/${date}`;
+const events = {
+    "1/1": "あけましておめでとう！今年はどんな素敵な年にする？🎍",
+    "1/5": "正月太りには気をつけようね...🍡🍡🍡",
+    "2/14": "ハッピーバレンタイン！チョコっと甘い思い出残せた？🍫",
+    "2/22":"にゃにゃにゃ！？今日は猫の日だよ！🐾",
+    "3/3": "今日は桃の節句。春の訪れを感じるね！🌸",
+    "3/14": "πの日だ！円周率何桁まで知ってる？🥧",
+    "4/1": "今日友だちが話してたこと、全部ウソじゃないよね？🤡",
+    "4/4": "今日は404の日。アプリのバックアップ取ってるかな？",
+    "5/1": "メーデーメーデー！頑張りすぎなときは休憩しよう！👷",
+    "5/5": "今日は端午の節句。元気に過ごせているかな？🎏🐾",
+    "6/30": "今日で1年の半分が終了！今までの記録を振り返ってみる？",
+    "7/7": "今日は七夕。願い事が叶いますように...🎋",
+    "7/23": "1年で暑さが厳しくなる時期だね。こまめに水分補給をしよう！",
+    "8/13": "お盆休みだね！でも今日は海には行かないでね...",
+    "9/25": "今日は中秋の名月。夜空に月は輝いてるかな？🐇",
+    "10/31": "ハッピーハロウィン！お菓子をくれなきゃ日記に悪戯するぞ🎃",
+    "11/11": "今日はポッキーの日！帰りにポッキー買ってこない？",
+    "11/22": "今日はいい夫婦の日！社交ダンスでも踊る？🕺💃",
+    "12/24": "メリークリスマス・イブ！素敵な夜を過ごしてね🎅",
+    "12/25": "メリークリスマス！自分へのご褒美も忘れずに🎁",
+    "12/31": "今年最後の日！1年間の思い出をゆっくり振り返ってみよう✨"
+};
+
+if (birthdaySchedule) {
+    greetingText = "🎂ハッピーバースデー！\n ✨️素敵な1日になりますように✨";
+} else {
+    const sortedDiaries = getSortedDiaries();
+    const isNotFirstTime = sortedDiaries.length > 0;
+
+    if (isNotFirstTime) {
+        const lastEntryDate = new Date(sortedDiaries[0].date);
+        lastEntryDate.setHours(0, 0, 0, 0);
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0);
+   
+        const diffDays = Math.floor((todayDate - lastEntryDate) / (1000 * 60 * 60 * 24));
+       
+            if (diffDays >= 4) {
+            greetingText = `おーい、もう${diffDays}日間記録が止まってるよ！いますぐ今日の日記を書こう⏳️`;
+            }else if (events[monthDate]) {
+            greetingText = events[monthDate];
+            }else if (diffDays === 1) {
+            greetingText = `今日はどんな1日だった？さっそく記録しよう！`;
+            } else if (diffDays === 2) {
+            greetingText = `おかえり！昨日はどんなことがあったかな？`;
+            } else if (diffDays === 3) {
+            greetingText = "おっと、連続記録が途切れてしまったみたいだね。\nでも大丈夫、今日から挽回していこう！"; 
+            } else if (sortedDiaries.length >= 3) {
+            const last3 = sortedDiaries.slice(0, 3); 
+            const moods = last3.map(d => d.mood); 
+            const uniqueMoods = new Set(moods);
+            
+            if (uniqueMoods.has(5) && uniqueMoods.has(1) && uniqueMoods.has(2)) {
+                greetingText = "もしかして情緒ジェットコースター？😀";
+       } else if (uniqueMoods.has(4) && uniqueMoods.has(1) && uniqueMoods.has(2)) {
+                  greetingText = "もしかして感情が君を制御してる？🤔";
+            } else if (moods.every(m => m === moods[0])) {
+                const mood = moods[0];
+                if (mood === 5) greetingText = "素敵な日々が続いているね！このまま幸せな日々を送り続けよう👍️";
+                else if (mood === 4) greetingText = "いい日を送る秘訣は笑顔かな？😊";
+                else if (mood === 3) greetingText = "穏やかな生活を送ることができてなにより🕊️";
+                else if (mood === 1) greetingText = "悲しいことが起こりすぎだよ！つらいときは無理しないで休もう😭";
+                else if (mood === 2) greetingText = "もう頭は大噴火！今日はクールダウンしよう🌋🙀";
+            }
+        }
+    }
+} 
+            
+document.getElementById('status-greeting').innerText = greetingText;
+
+            const threeDaysAgo = new Date(); threeDaysAgo.setDate(now.getDate() - 2); threeDaysAgo.setHours(0,0,0,0);
+            const recentFiltered = sortedDiaries.filter(d => { 
+                const entryDate = new Date(d.date); 
+                entryDate.setHours(0,0,0,0); 
+                return entryDate >= threeDaysAgo; 
+            });
+            document.getElementById('recent-diaries').innerHTML = recentFiltered.length ? recentFiltered.map(d => `<div class="diary-item" onclick="openViewer(${d.id})"><div class="diary-date">${d.date}</div><div class="diary-title">${d.title}</div><div class="diary-preview">${d.content.replace(/<[^>]*>/g, '')}</div></div>`).join('') : '<p style="font-size: 0.9rem; opacity: 0.6;">過去3日間の日記はありません。</p>';
+
+            const flashbackContainer = document.getElementById('flashback-container');
+            const periods = [{ label: '1週間前', days: 7 }, { label: '1ヶ月前', months: 1 }, { label: '3ヶ月前', months: 3 }, { label: '6ヶ月前', months: 6 }, { label: '1年前', years: 1 }, { label: '2年前', years: 2 }, { label: '3年前', years: 3 },{ label: '4年前', years: 4 }, { label: '5年前', years: 5 }, { label: '7年前', years: 7 }, { label: '10年前', years: 10 }, { label: '15年前', years: 15 },{ label: '20年前', years: 20 }];
+            let flashbackHtml = ''; let foundCount = 0;
+            
+            periods.forEach(p => {
+                const targetDate = new Date();
+                if (p.days) targetDate.setDate(targetDate.getDate() - p.days);
+                if (p.months) targetDate.setMonth(targetDate.getMonth() - p.months);
+                if (p.years) targetDate.setFullYear(targetDate.getFullYear() - p.years);
+                const iso = targetDate.toISOString().split('T')[0];
+        
+                const entry = diaryDateMap.get(iso); 
+if (entry && entry.length > 0) {
+  const d = entry[0];
+
+  foundCount++; 
+  flashbackHtml += `
+    <div class="flashback-item" onclick="openViewer(${d.id})">
+      <div class="flashback-label">${p.label} (${d.date})</div>
+      <div style="font-weight:bold;">${d.title}</div>
+    </div>`;
+}
+});
+flashbackContainer.innerHTML = foundCount > 0 
+  ? flashbackHtml 
+  : '<p style="opacity:0.6;">一定期間が経過すると表示されます</p>';
+
+const heatmap = document.getElementById('heatmap');
+
+let html = '';
+
+for (let i = 99; i >= 0; i--) {
+    const d = new Date(); 
+    d.setDate(d.getDate() - i); 
+    const isoStr = d.toISOString().split('T')[0];
+    
+    const entries = diaryDateMap.get(isoStr); 
+    const entry = (entries && entries.length > 0) ? entries[0] : null;
+    
+    const moodClass = entry ? `cell-${entry.mood}` : 'cell-0';
+    const clickHandler = entry ? `openViewer(${entry.id})` : `handleHeatmapClick('${isoStr}')`;
+    
+    html += `<div class="heatmap-cell ${moodClass}" title="${isoStr}" onclick="${clickHandler}"></div>`;
+}
+            heatmap.innerHTML = html;
+            renderMoodChart();
+        }
+let homeDisplayMode = 'diary'; 
+
+function switchHomeList(type) {
+    homeDisplayMode = type;
+    const diaryList = document.getElementById('recent-diaries');
+    const scheduleList = document.getElementById('recent-schedules');
+    const title = document.getElementById('home-list-title');
+  
+    const btnDiary = document.getElementById('btn-show-diaries');
+    const btnSched = document.getElementById('btn-show-schedules');
+    
+    if(btnDiary) btnDiary.classList.toggle('active', type === 'diary');
+    if(btnSched) btnSched.classList.toggle('active', type === 'schedule');
+
+    if (type === 'diary') {
+        if(diaryList) diaryList.classList.remove('hidden');
+        if(scheduleList) scheduleList.classList.add('hidden');
+        if(title) title.innerText = '最近の日記';
+    } else {
+        if(diaryList) diaryList.classList.add('hidden');
+        if(scheduleList) scheduleList.classList.remove('hidden');
+        if(title) title.innerText = 'これからの予定';
+        renderSchedules(); 
+    }
+}
+
+function renderSchedules() {
+    const container = document.getElementById('recent-schedules');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const today = new Date().toISOString().split('T')[0];
+    const upcoming = schedules
+        .filter(s => s.date >= today)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, 5);
+
+    if (upcoming.length === 0) {
+        container.innerHTML = '<p style="font-size:0.9rem; opacity:0.6; text-align:center; padding:20px;">予定はありません</p>';
+        return;
+    }
+
+    upcoming.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'diary-item'; 
+        item.style.borderLeftColor = 'var(--accent-color)'; 
+        item.innerHTML = `
+            <div class="diary-date">${s.date}</div>
+            <div class="diary-title">${s.title}</div>
+        `;
+        item.onclick = () => {
+            openViewer(s.id); 
+        };
+        container.appendChild(item);
+    });
+}
+
+        function handleHeatmapClick(date) { if (confirm(`${date} の日記を新規作成しますか？`)) { openEditor('diary'); document.getElementById('diary-date-input').value = date; } }
+
+        async function setChartType(type, btn) { config.chartType = type; await saveConfig(); document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderMoodChart(); }
+
+        function renderMoodChart() {
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const monthDiaries = diaries.filter(d => d.date.startsWith(currentMonth)).sort((a,b) => a.date.localeCompare(b.date));
+            const moodCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}; 
+            diaries.forEach(d => { if(d.date.startsWith(currentMonth)) moodCounts[d.mood]++ });
+
+            if (window.myChart) window.myChart.destroy();
+            let chartData;
+            if (config.chartType === 'line') {
+                chartData = { labels: monthDiaries.map(d => d.date.split('-')[2]), datasets: [{ label: '感情推移', data: monthDiaries.map(d => d.mood), borderColor: '#ffca28', backgroundColor: 'rgba(255, 202, 40, 0.2)', fill: true, tension: 0.3 }] };
+            } else {
+                chartData = { labels: ['😭 最悪', '😡 怒り', '😐 普通', '😊 良好', '🤩 最高',], datasets: [{ data: [moodCounts[1], moodCounts[2], moodCounts[3], moodCounts[4], moodCounts[5]], backgroundColor: ['#a2d2ff', '#ff8a80', '#c8e6c9', '#ffb7c5', '#ffd700'] }] };
+            }
+            window.myChart = new Chart(ctx, { type: config.chartType, data: chartData, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: config.chartType !== 'line', position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }, scales: config.chartType === 'line' ? { y: { min: 1, max: 5, ticks: { stepSize: 1, callback: v => ['','😭','😡','😐','😊','🤩'][v] } } } : (config.chartType === 'bar' ? { y: { beginAtZero: true, ticks: { stepSize: 1 } } } : {}) } });
+            document.getElementById('stat-count-month').innerText = monthDiaries.length;
+        }
+        function renderDiaryList() {
+    diaryPage = 1;
+    const search = document.getElementById('search-input').value.toLowerCase();
+    const searchDate = document.getElementById('search-date-input').value;
+
+    let baseDiaries = [...diaries];
+
+    baseDiaries.sort((a,b)=>
+        diarySortOrder === 'new'
+            ? b.date.localeCompare(a.date)
+            : a.date.localeCompare(b.date)
+    );
+
+    const filtered = baseDiaries.filter(d => {
+        if (searchDate && d.date !== searchDate) return false;
+        if (activeMoodFilter !== null && d.mood !== activeMoodFilter) return false;
+
+        if (search) {
+            const targetText = d.searchText || (d.title + (d.tags || []).join(' ')).toLowerCase();
+            return targetText.includes(search);
+        }
+
+        return true;
+    });
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / DIARY_PAGE_SIZE));
+    if (diaryPage > totalPages) diaryPage = totalPages;
+
+    const start = (diaryPage - 1) * DIARY_PAGE_SIZE;
+    const visible = filtered.slice(start, start + DIARY_PAGE_SIZE);
+
+    document.getElementById('all-diaries-list').innerHTML =
+        visible.map(d => `
+            <div class="card diary-item" onclick="openViewer(${d.id})">
+                <div style="display:flex; justify-content:space-between;">
+                    <span class="diary-date">${d.date}</span>
+                    <span>${['','😭','😡','😐','😊','🤩'][d.mood]}</span>
+                </div>
+                <div class="diary-title">${d.title}</div>
+                <div class="diary-preview">${d.content.replace(/<[^>]*>/g,'').substring(0,100)}...</div>
+                <div style="margin-top:5px;">${d.tags.map(t=>`<span class="tag-badge">${t}</span>`).join('')}</div>
+            </div>
+        `).join('');
+
+    document.getElementById('diary-total-count').textContent = `全 ${filtered.length} 件の日記`;
+    document.getElementById('diary-page-info').innerText =
+         `${diaryPage} / ${totalPages}`;
+             updatePaginationButtons('diary-prev-btn', 'diary-next-btn', diaryPage, totalPages);
+                }
+        function nextDiaryPage() {
+    diaryPage++;
+    renderDiaryList();
+}
+
+function prevDiaryPage() {
+    if (diaryPage > 1) diaryPage--;
+    renderDiaryList();
+}
+
+function changeDiarySort(order) {
+    diarySortOrder = order;
+    diaryPage = 1;
+    renderDiaryList();
+}
+    
+    
+
+        function filterBySpecificDate(date) { renderDiaryList(); }
+
+        function renderCalendar() {
+            cleanupPassedSchedules();
+            const year = calendarDate.getFullYear(); const month = calendarDate.getMonth();
+            document.getElementById('calendar-month-year').innerText = `${year}年${month + 1}月`;
+            const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const body = document.getElementById('calendar-body'); body.innerHTML = '';
+            for (let i = 0; i < firstDay; i++) body.innerHTML += '<div></div>';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const hasEntry = diaryDateMap.has(dateStr) || scheduleDateMap.has(dateStr);
+                body.innerHTML += `<div class="calendar-day ${hasEntry ? 'has-entry' : ''}" onclick="showCalendarEntries('${dateStr}')">${day}</div>`;
+            }
+        }
+
+        function changeMonth(offset) {
+    calendarDate.setDate(1); 
+    calendarDate.setMonth(calendarDate.getMonth() + offset);
+    renderCalendar();
+}
+        function gotoCalendarMonth(val) { if(!val) return; const [year, month] = val.split('-'); calendarDate = new Date(year, parseInt(month)-1, 1); renderCalendar(); }
+
+        function showCalendarEntries(date) {
+    const dEntries = diaries.filter(d => d.date === date); 
+    const sEntries = schedules.filter(s => s.date === date);
+    let html = `<h4>${date} の記録</h4>`;
+    
+    if (dEntries.length === 0 && sEntries.length === 0) {
+        html += `<div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="btn btn-primary" onclick="openEditorWithDate('diary', '${date}')">日記を書く</button>
+            <button class="btn btn-primary" onclick="openEditorWithDate('schedule', '${date}')">予定を立てる</button>
+        </div>`;
+    } else {
+        dEntries.forEach(d => { 
+            html += `<div class="card diary-item" onclick="openViewer(${d.id})">
+                <span style="font-size:0.8rem; color:var(--primary-color);">[日記]</span> ${d.title}
+            </div>`; 
+        });
+        sEntries.forEach(s => { 
+            html += `<div class="card diary-item" onclick="openViewer(${s.id})">
+                <span style="font-size:0.8rem; color:var(--accent-color);">[予定]</span> ${s.title}
+            </div>`; 
+        });
+    }
+    document.getElementById('selected-day-entries').innerHTML = html;
+}
+
+function openEditorWithDate(type, date) {
+    currentEditingId = null;
+    currentEditingType = type;
+    
+    const titleInput = document.getElementById('diary-title');
+    const dateInput = document.getElementById('diary-date-input');
+    const contentDiv = document.getElementById('diary-content');
+    const tagsInput = document.getElementById('diary-tags');
+    const diaryFields = document.getElementById('diary-only-fields');
+    const diaryFooter = document.getElementById('diary-only-footer');
+
+    if (type === 'diary') {
+        diaryFields.classList.remove('hidden');
+        diaryFooter.classList.remove('hidden');
+        titleInput.placeholder = "タイトル";
+    } else {
+        diaryFields.classList.add('hidden');
+        diaryFooter.classList.add('hidden');
+        titleInput.placeholder = "タイトル";
+    }
+
+    titleInput.value = '';
+    dateInput.value = date;
+    
+    if (type === 'diary') {
+        contentDiv.innerHTML = '';
+        tagsInput.value = '';
+        setMood(4);
+        tempImages = [];
+    } else {
+        contentDiv.innerHTML = `<div><b>場所 :</b></div><div><b>時間 :</b></div><div><b>計画 :</b></div><div><b>持ち物 :</b></div><div><b>備考 :</b></div>`;
+    }
+
+    updateImagePreviews();
+    switchTab('editor');
+}
+
+        function renderGallery() {
+
+    let sortedDiaries = [...diaries];
+
+    if (gallerySortOrder === 'new') {
+        sortedDiaries.sort((a, b) => b.date.localeCompare(a.date));
+    } else {
+        sortedDiaries.sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    const imgs = [];
+
+    sortedDiaries.forEach(d => {
+        (d.images || []).forEach(src => {
+            imgs.push({
+                src,
+                id: d.id,
+                date: d.date
+            });
+        });
+    });
+
+    const totalPages = Math.max(
+        1,
+        Math.ceil(imgs.length / GALLERY_PAGE_SIZE)
+    );
+
+    if (galleryPage > totalPages) {
+        galleryPage = totalPages;
+    }
+
+    const start = (galleryPage - 1) * GALLERY_PAGE_SIZE;
+    const end = start + GALLERY_PAGE_SIZE;
+
+    const visibleImgs = imgs.slice(start, end);
+
+    document.getElementById('gallery-container').innerHTML =
+        visibleImgs.map(obj => `
+            <img
+                src="${obj.src}"
+                class="gallery-img"
+                loading="lazy"
+                onclick="zoomImage('${obj.src}', '${obj.id}')"
+            >
+        `).join('');
+    document.getElementById('gallery-total-count').textContent = `全 ${imgs.length} 枚のギャラリー`;
+    document.getElementById('gallery-page-info').innerText =
+        `${galleryPage} / ${totalPages}`;
+            updatePaginationButtons('gallery-prev-btn', 'gallery-next-btn', galleryPage, totalPages);
+}
+function nextGalleryPage() {
+
+    let totalImages = 0;
+
+    diaries.forEach(d => {
+        totalImages += (d.images || []).length;
+    });
+
+    const totalPages = Math.ceil(
+        totalImages / GALLERY_PAGE_SIZE
+    );
+
+    if (galleryPage < totalPages) {
+        galleryPage++;
+    }
+
+    renderGallery();
+}
+
+function prevGalleryPage() {
+    if (galleryPage > 1) {
+        galleryPage--;
+    }
+
+    renderGallery();
+}
+
+function changeGallerySort(order) {
+    gallerySortOrder = order;
+    galleryPage = 1;
+    renderGallery();
+}
+        function deleteGalleryImage(event) {
+    event.stopPropagation();
+
+    if (!currentGalleryImage) return;
+
+    const confirmed = confirm('この写真を削除しますか？');
+    if (!confirmed) return;
+
+    const diary = diaries.find(d => d.id == currentGalleryImage.diaryId);
+
+    if (!diary) return;
+
+    diary.images = diary.images.filter(
+        img => img !== currentGalleryImage.src
+    );
+
+    saveDataToDB('diaries', diary);
+invalidateCaches();
+    renderGallery();
+    renderDiaryList();
+
+    document.getElementById('img-modal').style.display = 'none';
+
+    currentGalleryImage = null;
+}
+       function renderTags() {
+    const tagMap = {};
+    diaries.forEach(d => {
+        if (d.tags && Array.isArray(d.tags)) {
+            d.tags.forEach(t => {
+                if (t && t.trim() !== '') {
+                    tagMap[t] = (tagMap[t] || 0) + 1;
+                }
+            });
+        }
+    });
+
+    const html = Object.keys(tagMap)
+    .sort()
+    .map(tag => {
+        const safeTag = tag.replace(/'/g, "\\'");
+        return `<span class="tag-badge" onclick="filterByTag('${safeTag}')">${tag} (${tagMap[tag]})</span>`;
+    })
+    .join('');
+
+    document.getElementById('tags-cloud').innerHTML = 
+        html || '<p style="opacity:0.6; text-align:center; padding:40px 20px;">まだタグが登録されていません</p>';
+
+    document.getElementById('tag-filter-area').classList.add('hidden');
+    document.getElementById('tag-pagination-area').classList.add('hidden');
+    document.getElementById('tag-filtered-results').innerHTML = '';
+}
+
+        function filterByTag(tag) {
+    currentTag = tag;
+    tagPage = 1;
+    renderTagPage();
+}
+
+function renderTagPage() {
+    if (!currentTag) return;
+
+    let filtered = diaries.filter(d => d.tags && d.tags.includes(currentTag));
+
+    filtered.sort((a, b) =>
+        tagSortOrder === 'new' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date)
+    );
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / TAG_PAGE_SIZE));
+    if (tagPage > totalPages) tagPage = totalPages;
+
+    const start = (tagPage - 1) * TAG_PAGE_SIZE;
+    const visible = filtered.slice(start, start + TAG_PAGE_SIZE);
+
+    let resultsHTML = visible.map(d => `
+        <div class="card diary-item" onclick="openViewer(${d.id})">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="diary-date">${d.date}</span>
+                <span>${['','😭','😡','😐','😊','🤩'][d.mood] || ''}</span>
+            </div>
+            <div class="diary-title">${d.title}</div>
+        </div>
+    `).join('');
+
+    document.getElementById('tag-filtered-results').innerHTML = `
+    <h4>タグ: ${currentTag} (${filtered.length}件)</h4>
+        ${resultsHTML || '<p style="opacity:0.6; padding:20px;">該当する日記はありません</p>'}
+    `;
+
+    document.getElementById('tag-filter-area').classList.remove('hidden');
+    document.getElementById('tag-pagination-area').classList.remove('hidden');
+
+    document.getElementById('tag-page-info').innerText = `${tagPage} / ${totalPages}`;
+
+    updatePaginationButtons('tag-prev-btn', 'tag-next-btn', tagPage, totalPages);
+}
+
+function nextTagPage() {
+    tagPage++;
+    renderTagPage();
+}
+
+function prevTagPage() {
+    if (tagPage > 1) tagPage--;
+    renderTagPage();
+}
+
+function changeTagSort(order) {
+    tagSortOrder = order;
+    tagPage = 1;
+    renderTagPage();
+}
+
+        function nextDiaryPage() { diaryPage++; renderDiaryList(); }
+function prevDiaryPage() { if (diaryPage > 1) { diaryPage--; renderDiaryList(); } }
+
+function nextGalleryPage() { galleryPage++; renderGallery(); }
+function prevGalleryPage() { if (galleryPage > 1) { galleryPage--; renderGallery(); } }
+
+function nextTagPage() { tagPage++; renderTagPage(); }
+function prevTagPage() { if (tagPage > 1) { tagPage--; renderTagPage(); } }
+        
+        async function setTheme(t) { config.theme = t; await saveConfig(); applyTheme(); }
+        async function setFont(f) { config.font = f; await saveConfig(); applyTheme(); }
+        function applyTheme() { document.body.setAttribute('data-theme', config.theme); document.body.className = config.font; }
+async function changePassword() {
+    const currentPassInput = prompt(
+        "現在使用中のパスコードを入力してください。"
+    );
+
+    if (currentPassInput !== config.password) {
+        alert("現在のパスコードが一致しない、またはキャンセルされました。");
+        return;
+    }
+    const requiredRecoveryPass = config.customRecoveryPass;
+    const recoveryInput = prompt(
+        "【本人確認】\n次に、パスコードを変更するには「本人確認パスコード」を入力してください。"
+    );
+
+    if (recoveryInput !== requiredRecoveryPass) {
+        alert("本人確認パスコードが一致しない、またはキャンセルされました。");
+        return;
+    }
+
+    const newPass = prompt("新しいパスコードを入力してください：");
+    if (!newPass) return;
+
+    const confirmPass = prompt("確認のため、もう一度入力してください：");
+    if (newPass !== confirmPass) {
+        alert("パスコードが一致しません。");
+        return;
+    }
+
+    try {
+         config.password = newPass;
+    await saveConfig();
+        alert("パスコードを更新しました。次回の起動から有効になります。");
+    } catch (e) {
+        console.error(e);
+        alert("保存中にエラーが発生しました。");
+    }
+}
+        async function saveConfig() { await saveDataToDB('config', { key: 'main', ...config }); }
+
+        async function exportData() {
+    const backupData = JSON.stringify({ diaries, schedules, config });
+    const blob = new Blob([backupData], { type: 'application/json' });
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().split('T')[0];
+    
+    a.href = URL.createObjectURL(blob);
+    a.download = `dejicho_backup_${dateStr}.json`;
+    a.click();
+
+    config.lastBackup = new Date().getTime();
+    await saveConfig();
+    
+    alert('バックアップをダウンロードしました。');
+
+    if (document.getElementById('view-home').classList.contains('active')) {
+        renderNotifications();
+    }
+}
+
+async function importData(e) {
+    const file = e.target.files[0]; 
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+        try {
+            const imported = JSON.parse(ev.target.result);
+            if (confirm('データを上書きしますか？')) {
+                const txD = db.transaction('diaries', 'readwrite'); 
+                await txD.objectStore('diaries').clear();
+                const txS = db.transaction('schedules', 'readwrite'); 
+                await txS.objectStore('schedules').clear();
+                diaries = imported.diaries || [];
+                for (let d of diaries) {
+                    d.searchText = (d.title + (d.tags || []).join(' ')).toLowerCase();
+                    await saveDataToDB('diaries', d);
+                }
+
+                schedules = imported.schedules || [];
+                for (let s of schedules) {
+                    await saveDataToDB('schedules', s);
+                }
+
+                config = imported.config || config; 
+                await saveConfig(); 
+                
+                invalidateCaches();
+                alert('データの読み込みが完了しました。');
+                location.reload();
+            }
+        } catch (err) { 
+            console.error(err);
+            alert('無効なファイル形式です。'); 
+        }
+    };
+    reader.readAsText(file);
+}
+
+async function startFullInitialization() {
+    if (!confirm("【警告】\nすべてのデータを完全に消去しますか？\nこの操作は取り消せません。")) {
+        return;
+    }
+    const currentPassInput = prompt(
+        "【パスコード認証】 \n現在使用中のパスコードを入力してください。"
+    );
+
+    if (currentPassInput !== config.password) {
+        alert("現在のパスコードが一致しない、またはキャンセルされました。初期化を中止します。");
+        return;
+    }
+const requiredRecoveryPass = config.customRecoveryPass;
+
+const userInput = prompt(
+    "【本人確認パスコード認証】\n本人確認が必要です。\n設定した「本人確認パスコード」を入力してください。"
+);
+
+if (userInput !== requiredRecoveryPass) {
+    alert("パスコードが一致しない、またはキャンセルされました。初期化を中止します。");
+    return;
+}
+
+const finalCheck = prompt(
+    "【最終確認】\n認証されました。\n本当に全データを削除する場合は大文字で「DELETE」と入力してください。\n記録をすべて抹消する準備は整いましたか？"
+);
+
+if (finalCheck !== "DELETE") {
+    alert("初期化を中止しました。");
+    return;
+}
+
+if (db) {
+    db.close();
+}
+
+try {
+    await clearDatabase();
+    localStorage.clear();
+
+    alert("すべてのデータが消去されました。アプリを初期化します。");
+
+    location.reload();
+
+} catch (error) {
+    console.error("削除中にエラーが発生しました。もう一度時間をおいてから再開してください。", error);
+    alert("削除に失敗しました。");
+}
+
+} 
+
+function clearDatabase() {
+    return new Promise((resolve, reject) => {
+
+        const deleteRequest = indexedDB.deleteDatabase("でじDB");
+
+        deleteRequest.onsuccess = () => {
+            console.log("DB削除成功　\nデータをすべて消去しました。");
+            resolve();
+        };
+
+        deleteRequest.onerror = (event) => {
+            console.error("DB削除失敗 \nタブ内の「でじ帖」アプリをすべて閉じてからもう一度再開してください。", event);
+            reject(event);
+        };
+
+        deleteRequest.onblocked = () => {
+            alert("他のタブや接続がDBを使用中です。\nタブ内の「でじ帖」アプリをすべて閉じてからもう一度再開してください。");
+            reject("blocked");
+        };
+    });
+}
+
+
+        let searchTimer;
+
+document.getElementById('search-input').addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        renderDiaryList();
+    }, 300);
+});
+    
+function showRecoverySetup() {
+    if (document.getElementById('recovery-setup-ui')) return;
+
+    const recoveryHtml = `
+        <div id="recovery-setup-ui" class="card" style="border: 2px solid var(--primary-color); animation: fadeIn 0.3s; margin-top: 10px;">
+            <h3 style="color:var(--primary-color); margin-top:0;">🛡️ 本人確認の設定</h3>
+            <p style="font-size: 0.85rem; color: #d32f2f; font-weight: bold; background: #ffebee; padding: 10px; border-radius: 8px;">
+                【重要】この設定は一度しか行えません。忘れると二度と復旧できないため、必ずスクリーンショットなどで記録を残してください。
+            </p>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem;">本人確認パスコード</label>
+                <input type="text" id="setup-fix-pass" placeholder="例: secret password" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+            </div>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem;">合言葉</label>
+                <input type="text" id="setup-keyword" placeholder="例: あいことば0123" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+            </div>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem; display:block; margin-bottom:4px;">3. 合言葉のヒント（入力時に表示されます）</label>
+                <input type="text" id="setup-hint" placeholder="例: 好きな食べ物は？" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-bottom:8px;" onclick="saveRecoverySettings()">設定を確定して保存</button>
+            <button class="forget-btn" style="width:100%;" onclick="document.getElementById('recovery-setup-ui').remove()">あとで設定する</button>
+        </div>
+    `;
+
+    const area = document.getElementById('notification-area');
+    area.insertAdjacentHTML('afterend', recoveryHtml);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function saveRecoverySettings() {
+    const pass = document.getElementById('setup-fix-pass').value;
+    const word = document.getElementById('setup-keyword').value;
+    const hint = document.getElementById('setup-hint').value; 
+
+    if (!pass || !word || !hint) {
+        alert('本人確認パスコード、合言葉、ヒントのすべてを入力してください。');
+        return;
+    }
+
+    if (confirm('一度設定すると変更できません。忘却防止の記録を残しましたか？')) {
+        config.recoverySet = true;
+        config.customRecoveryPass = pass;
+        config.customRecoveryWord = word;
+        config.customRecoveryHint = hint; 
+        
+        await saveConfig();
+        
+        alert('本人確認の設定が完了しました。');
+        const ui = document.getElementById('recovery-setup-ui');
+        if(ui) ui.remove();
+        renderNotifications(); 
+    }
+}
+        function renderAll() { renderDashboard(); renderDiaryList(); renderCalendar(); renderGallery(); renderTags(); }
+        
+        function updateViewerCharCount(htmlContent) {
+    const countEl = document.getElementById('viewer-char-count');
+    if (!countEl) return;
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent || '';
+    const plainText = tempDiv.textContent || tempDiv.innerText || '';
+    
+    const count = plainText.length;
+    countEl.textContent = `${count} 文字`;
+}
+
+let scholarLayer = null;
+let scholarObserver = null;
+let scholarInterval = null;
+
+const scholarChars = 
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" +
+    "αβγδεζηθικλμνξοπρστυφχψω!?#$%&¥@.,€0123456789";
+
+function random(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function createScholarChar() {
+    if (!scholarLayer || document.body.dataset.theme !== "scholar") return;
+
+    const el = document.createElement("div");
+    el.className = "scholar-char";
+
+    const sizes = ["small", "small", "small", "medium", "medium", "large"];
+    el.classList.add(sizes[Math.floor(Math.random() * sizes.length)]);
+
+
+    let text = scholarChars[Math.floor(Math.random() * scholarChars.length)];
+    if (Math.random() < 0.018) {
+        text = ["で", "じ", "帖", "でじ帖"][Math.floor(Math.random() * 4)];
+    }
+    el.textContent = text;
+
+    const side = Math.floor(random(0, 4));
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let sx, sy, ex, ey;
+    switch(side) {
+        case 0: sx = -200; sy = random(-100, vh+100); ex = vw + 200; ey = random(-100, vh+100); break;
+        case 1: sx = vw + 200; sy = random(-100, vh+100); ex = -200; ey = random(-100, vh+100); break;
+        case 2: sx = random(-100, vw+100); sy = -200; ex = random(-100, vw+100); ey = vh + 200; break;
+        case 3: sx = random(-100, vw+100); sy = vh + 200; ex = random(-100, vw+100); ey = -200; break;
+    }
+
+    el.style.setProperty("--sx", `${sx}px`);
+    el.style.setProperty("--sy", `${sy}px`);
+    el.style.setProperty("--ex", `${ex}px`);
+    el.style.setProperty("--ey", `${ey}px`);
+    el.style.setProperty("--r", `${random(-720, 720)}deg`);
+
+    const moveDur = random(18, 45);
+    const spinDur = random(40, 120);
+    el.style.animationDuration = `${moveDur}s, ${spinDur}s`;
+    el.style.opacity = random(0.25, 0.9);
+
+    scholarLayer.appendChild(el);
+
+    setTimeout(() => {
+        if (el.parentNode) el.remove();
+    }, moveDur * 1000 + 1000);
+}
+
+function startScholarFloating() {
+    if (scholarLayer) return;
+
+    scholarLayer = document.createElement("div");
+    scholarLayer.id = "scholarFloating";
+    scholarLayer.className = "scholar-floating-layer";
+    document.body.appendChild(scholarLayer);
+
+    for (let i = 0; i < 80; i++) {
+        setTimeout(createScholarChar, i * 80);
+    }
+
+    scholarInterval = setInterval(() => {
+        if (document.body.dataset.theme === "scholar") {
+            createScholarChar();
+        }
+    }, 120);
+}
+
+function stopScholarFloating() {
+    if (scholarInterval) {
+        clearInterval(scholarInterval);
+        scholarInterval = null;
+    }
+    if (scholarLayer) {
+        scholarLayer.remove();
+        scholarLayer = null;
+    }
+}
+
+function applyTheme() {
+    const currentTheme = config.theme;
+    document.body.setAttribute('data-theme', currentTheme);
+    document.body.className = config.font || 'font-standard';
+
+    if (currentTheme === "scholar") {
+        startScholarFloating();
+    } else {
+        stopScholarFloating();
+    }
+}
+
+observer.observe(document.body,{
+    attributes:true,
+    attributeFilter:["data-theme"]
+});    
+    </script>
+</body>
+</html>
